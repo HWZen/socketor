@@ -5,7 +5,14 @@
 
 mysock::Client::Client(const char *server_address, int port)
 {
-    Real_Addr = server_address;
+    hasConnected = std::make_shared<bool>(false);
+    server_port = port;
+    server_address = server_address;
+
+}
+
+int mysock::Client::connect2server()
+{
 #ifdef I_OS_WIN
 
     // Initialize Windows socket library
@@ -18,18 +25,18 @@ mysock::Client::Client(const char *server_address, int port)
     err = WSAStartup(wVersionRequested, &wsaData);
 
     if (err != 0)
-        throw mysock::exception<int>(err,"WSAStartup error");
+        return WSA_ERROR;
 
 
     if (LOBYTE(wsaData.wVersion) != 2 ||
         HIBYTE(wsaData.wVersion) != 2)
     {
         WSACleanup();
-        throw mysock::exception<std::string>("LOBYTE and HIBYTE error");
+        return BYTE_FAIL;
     }
 #ifdef _MSC_VER
     char **pptr = nullptr;
-    HOSTENT *pHostEntry = gethostbyname(server_address);
+    HOSTENT *pHostEntry = gethostbyname(server_address.c_str());
     char szIpBuff[32] = {0};
     if (nullptr != pHostEntry && server_address[0] != '\0')
     {
@@ -42,12 +49,14 @@ mysock::Client::Client(const char *server_address, int port)
             //inet_ntop的返回值为NULL，则表示失败，否则返回相应的IP地址（此时szIpRet指向的是szIpBuff）
             const char *szIpRet = inet_ntop(pHostEntry->h_addrtype, *pptr, szIpBuff, sizeof(szIpBuff));
             if(szIpRet != nullptr)
-                Real_Addr = szIpBuff;
+                server_address = szIpBuff;
         }
 
     }
-    else
-        throw mysock::exception<std::string>("get host name fail");
+    else{
+        WSACleanup();
+        return GET_HOST_NAME_FAIL;
+    }
 #endif //_MSC_VER
 
 #endif //I_OS_WIN
@@ -67,7 +76,7 @@ mysock::Client::Client(const char *server_address, int port)
     case AF_INET:
     case AF_INET6:
         pptr = hptr->h_addr_list;
-        Real_Addr = inet_ntop(hptr->h_addrtype, hptr->h_addr, str, sizeof(str));
+        server_address = inet_ntop(hptr->h_addrtype, hptr->h_addr, str, sizeof(str));
         break;
     default:
         printf(" unknown address type\n ");
@@ -79,23 +88,30 @@ mysock::Client::Client(const char *server_address, int port)
 
     // 创建客户端套节字
     IN_ADDR tmp;
-    tmp.s_addr = inet_addr(Real_Addr.c_str());
+    tmp.s_addr = inet_addr(server_address.c_str());
     Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    Socket_info = {PF_INET, htons(port), tmp};
+    Socket_info = {PF_INET, htons(server_port), tmp};
     //AF_INET指明使用TCP/IP协议族；
     //SOCK_STREAM, IPPROTO_TCP具体指明使用TCP协议
     // 指明远程服务器的地址信息(端口号、IP地址等)
     // memset(&server, 0, sizeof(SOCKADDR_IN));            //先将保存地址的server置为全0
     // server.sin_family = PF_INET;                        //声明地址格式是TCP/IP地址格式
     // server.sin_port = htons(port);                          //指明连接服务器的端口号，htons()用于 converts values between the host and network byte order
-    // server.sin_addr.s_addr = inet_addr(Real_Addr.c_str());       //指明连接服务器的IP地址
+    // server.sin_addr.s_addr = inet_addr(server_address.c_str());       //指明连接服务器的IP地址
     //结构SOCKADDR_IN的sin_addr字段用于保存IP地址，sin_addr字段也是一个结构体，sin_addr.s_addr用于最终保存IP地址
     //inet_addr()用于将 形如的"127.0.0.1"字符串转换为IP地址格式
+
+    if(connect(Socket, (struct sockaddr *)&Socket_info, sizeof(SOCKADDR_IN))<0)
+        return CONNECT_FAIL;
+    return SUCESS;
 }
 
-bool mysock::Client::connect2server()
+void mysock::Client::close_connect()
 {
-    if(connect(Socket, (struct sockaddr *)&Socket_info, sizeof(SOCKADDR_IN))<0)
-        return false;
-    return true;
+    closesocket(Socket);
+#ifdef I_OS_WIN
+    WSACleanup();
+#endif
 }
+
+

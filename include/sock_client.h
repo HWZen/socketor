@@ -1,6 +1,7 @@
 #pragma once
 #include "socketor.h"
 #include <string>
+#include <memory>
 
 //定义程序中使用的常量
 #define SERVER_ADDRESS "127.0.0.1" //服务器端IP地址
@@ -22,22 +23,35 @@ namespace mysock
 {
     class SOCK_DEC Client : public socketor
     {
+    public:
+        explicit Client(const char *server_address = SERVER_ADDRESS, int port = DEFAULT_PORT);
+
+        // 连接至服务器
+        int connect2server();
+
+        void Send(const std::string &str) override
+        {
+            socketor::Send(str);
+        }
+
+
+        void rawSend(const void *str, size_t len)
+        {
+            socketor::Send(str, len);
+        }
+
+        void close_connect();
+
     private:
 #ifdef I_OS_WIN
         WSADATA wsaData{};
-        size_t _msgSize;
+        size_t _msgSize{};
 #endif
         // 服务器真实地址
-        std::string Real_Addr;
-    public:
-        explicit Client(const char *server_address = SERVER_ADDRESS, int port = DEFAULT_PORT) noexcept(false);
-        void Send(const std::string &str)
-        {
-            socketor::Send(str);
-            Sleep(100);
-        }
+        std::string server_address;
 
-        // 连接至服务器
-        bool connect2server();
+        int server_port;
+
+        std::shared_ptr<bool> hasConnected;
     };
 } // namespace mysock

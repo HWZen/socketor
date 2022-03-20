@@ -1,56 +1,114 @@
 #include "sock_server.h"
 #include <memory>
-#include <thread>
 
 namespace mysock
 {
-    void Accept_call_back(socketor s) { s.close_connect(); }
+    void Accept_call_back(socketor s)
+    {
+        closesocket(s.getRawSocket());
+    }
+
     server::server(int Port)
     {
-#ifdef I_OS_WIN
-        WSAStartup(0x0202, &wsaData);
-#endif
         Socket_info.sin_family = AF_INET;
         Socket_info.sin_port = htons(Port);
         Socket_info.sin_addr.s_addr = htonl(INADDR_ANY);
-        Socket =socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+        hasListened = std::make_shared<bool>(false);
     }
 
     int server::Listen()
     {
-        if (bind(Socket, (struct sockaddr *)&Socket_info, sizeof(SOCKADDR_IN)) == -1)
-            throw exception<flag>(BIND_FAIL, "Listen fail");
-        if (listen(Socket, 20) == -1)
-            throw exception<flag>(LISTEN_FAIL, "Listen fail");
+        if(!hasListened)
+            return EMPTY_OBJ;
+        if (*hasListened)
+            return LISTEN_SUCESS;
+
+#ifdef I_OS_WIN
+        WSADATA wsaData;
+        int err = WSAStartup(0x0202, &wsaData);
+        if(err != 0)
+            return WSA_ERROR;
+#endif
+        if (bind(Socket, (struct sockaddr*)&Socket_info, sizeof(SOCKADDR_IN)) == -1){
+            WSACleanup();
+            return BIND_FAIL;
+        }
+        if (listen(Socket, 20) == -1){
+            WSACleanup();
+            return LISTEN_FAIL ;
+        }
+        *hasListened = true;
         return LISTEN_SUCESS;
     }
 
-    void server::Accept(void (*call_back)(socketor))
+    int server::Accept(void (* call_back)(socketor))
     {
-        SOCKADDR_IN client;
+        if(!hasListened)
+            return EMPTY_OBJ;
+        if(!*hasListened)
+            return NO_LISTENTED;
 
-        std::shared_ptr<std::thread> RecThr;
+        SOCKADDR_IN rawClient;
 
-
-        while (TRUE)
-        {
-            // 开始接受握手请求，accept()是阻断函数，等成功接受后才会继续进行程序
+        // 开始接受握手请求，accept()是阻断函数，等成功接受后才会继续进行程序
 #ifdef I_OS_WIN
-            int iaddrSize = sizeof(SOCKADDR_IN);
-            SOCKET temp = accept(Socket, (struct sockaddr *)&client, &iaddrSize);
-            socketor Client(temp, client);
+        int iaddrSize = sizeof(SOCKADDR_IN);
+        SOCKET temp = accept(Socket, (struct sockaddr*)&rawClient, &iaddrSize);
+        socketor client(temp, rawClient);
 #endif
 
 #ifdef I_OS_LINUX
-            socklen_t length = sizeof(client);
-            socketor Client(accept(Socket, (struct sockaddr *)&client, &length), client);
+        socklen_t length = sizeof(rawClient);
+        socketor client(accept(Socket, (struct sockaddr *)&rawClient, &length), rawClient);
 #endif
-            // 接受成功后：
-            // cout << "Accepted client:" << Client.address() << ":" << Client.port() << endl;
-            // 新建线程，在新线程中进行后续的接发通信操作
+        call_back(client);
+        // 接受成功后：
+        // cout << "Accepted rawClient:" << client.address() << ":" << client.port() << endl;
+        // 新建线程，在新线程中进行后续的接发通信操作
+        return SUCESS;
 
-            RecThr = std::make_shared<std::thread>(call_back, Client);
-            RecThr->detach();
+    }
+
+    void server::close_connect()
+    {
+        if (hasListened && *hasListened == true)
+        {
+            closesocket(Socket);
+            *hasListened = false;
+#ifdef I_OS_WIN
+            WSACleanup();
+#endif
         }
-    } 
+    }
+
+    void server::close_connect(socketor s)
+    {
+        closesocket(s.getRawSocket());
+    }
+
+    server::server(server&& s) noexcept
+    {
+        this->Socket = s.Socket;
+        s.Socket = 0;
+        this->Socket_info = s.Socket_info;
+        s.Socket_info = SOCKADDR_IN{};
+
+        this->hasListened = s.hasListened;
+        s.hasListened = nullptr;
+    }
+
+    server::~server()
+    {
+        if (hasListened.use_count() == 1 && *hasListened)
+        {
+            closesocket(Socket);
+#ifdef I_OS_WIN
+            WSACleanup();
+#endif
+        }
+
+    }
+
 }// namespace mysock

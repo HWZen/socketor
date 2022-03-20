@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
 project(socketor)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 
 include_directories(.)
-include_directories(E:\\Github\\rapidjson)
+include_directories(../rapidjson)
 include_directories(include)
+include_directories(../fast_io/include)
 
 add_library(sockclient SHARED sock_client.cpp socketor.cpp)
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -18,8 +19,6 @@ target_compile_definitions(sockserver PRIVATE DEC)
 
 add_executable(server
         server_test.cpp
-        function.cpp
-        turing.cpp
         )
 target_link_libraries(server PRIVATE
         sockserver

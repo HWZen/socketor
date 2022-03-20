@@ -3,7 +3,7 @@
 //
 
 #include "socketor.h"
-#include <string.h>
+#include <cstring>
 
 #ifdef I_OS_LINUX
 
@@ -52,14 +52,6 @@ namespace mysock
             return "lose connect";
         buf[ret] = '\0';
         return buf;
-    }
-
-    void socketor::close_connect()
-    {
-        closesocket(Socket);
-#ifdef I_OS_WIN
-        WSACleanup();
-#endif
     }
 
 } // namespace mysock

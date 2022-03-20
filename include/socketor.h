@@ -71,19 +71,26 @@ namespace std{
 namespace mysock
 {
     enum flag{
-        LISTEN_SUCESS,
+        SUCESS,
+        LISTEN_SUCESS = SUCESS,
         BIND_FAIL,
-        LISTEN_FAIL
+        LISTEN_FAIL,
+        CONNECT_FAIL,
+        EMPTY_OBJ,
+        NO_LISTENTED,
+        BYTE_FAIL,
+        WSA_ERROR,
+        GET_HOST_NAME_FAIL
     };
 
     class SOCK_DEC socketor
     {
     protected:
-        SOCKET Socket{};
         SOCKADDR_IN Socket_info{};
         std::string Address;
         int Port{};
 
+        SOCKET Socket{};
     public:
         socketor() = default;
 
@@ -94,22 +101,23 @@ namespace mysock
         virtual void Send(const std::string &str);
 
         // 接收函数
-        virtual int receive(void *buf, size_t len = MAX_SOCKET_SIZE);
+        virtual int receive(void *buf, size_t len);
         virtual std::string receive();
 
-        void close_connect();
 
         // Socket地址
-        inline std::string address()
+        std::string address()
         {
             return Address;
         };
 
         // Socket端口
-        inline int port() const
+        int port() const
         {
             return Port;
         };
+
+        SOCKET getRawSocket(){return Socket;}
     };
 
     template<typename Ty>
