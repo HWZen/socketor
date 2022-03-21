@@ -3,11 +3,11 @@
 #include <ws2tcpip.h>
 #endif
 
-mysock::Client::Client(const char *server_address, int port)
+mysock::Client::Client(const char *_server_address, int port)
 {
     hasConnected = std::make_shared<bool>(false);
     server_port = port;
-    server_address = server_address;
+    server_address = _server_address;
 
 }
 
@@ -54,6 +54,8 @@ mysock::Client::Client(const char *server_address, int port)
 
     }
     else{
+        err = WSAGetLastError();
+
         WSACleanup();
         return GET_HOST_NAME_FAIL;
     }

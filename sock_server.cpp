@@ -10,6 +10,11 @@ namespace mysock
 
     server::server(int Port)
     {
+#ifdef I_OS_WIN
+
+        WSAStartup(0x0202, &wsaData);
+
+#endif
         Socket_info.sin_family = AF_INET;
         Socket_info.sin_port = htons(Port);
         Socket_info.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -25,13 +30,8 @@ namespace mysock
         if (*hasListened)
             return LISTEN_SUCESS;
 
-#ifdef I_OS_WIN
-        WSADATA wsaData;
-        int err = WSAStartup(0x0202, &wsaData);
-        if(err != 0)
-            return WSA_ERROR;
-#endif
-        if (err = bind(Socket, (struct sockaddr*)&Socket_info, sizeof(SOCKADDR_IN)); err == -1){
+
+        if (int err = bind(Socket, (struct sockaddr*)&Socket_info, sizeof(SOCKADDR_IN)); err == -1){
             WSACleanup();
             return BIND_FAIL;
         }
