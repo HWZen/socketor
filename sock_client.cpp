@@ -11,7 +11,7 @@ mysock::Client::Client(const char *server_address, int port)
 
 }
 
-int mysock::Client::connect2server()
+[[nodiscard]]int mysock::Client::connect2server()
 {
 #ifdef I_OS_WIN
 

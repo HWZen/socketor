@@ -34,3 +34,6 @@ target_link_libraries(client PRIVATE sockclient)
 
 add_executable(test function.cpp test.cpp)
 
+add_subdirectory(FileTransform)
+target_link_libraries(sender PRIVATE sockclient)
+target_link_libraries(receiver PRIVATE sockserver)

@@ -1,0 +1,15 @@
+//
+// Created by HWZ on 2022/3/20.
+//
+
+#ifndef SOCKETOR_FILESTRUCT_H
+#define SOCKETOR_FILESTRUCT_H
+
+#endif //SOCKETOR_FILESTRUCT_H
+
+using File = struct File{
+    char fileName[128]{};
+    char filePath[256]{};
+    size_t fileSize{};
+    std::byte sha256[256];
+};

@@ -27,7 +27,7 @@ namespace mysock
         explicit Client(const char *server_address = SERVER_ADDRESS, int port = DEFAULT_PORT);
 
         // 连接至服务器
-        int connect2server();
+        [[nodiscard]]int connect2server();
 
         void Send(const std::string &str) override
         {

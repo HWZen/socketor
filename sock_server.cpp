@@ -31,7 +31,7 @@ namespace mysock
         if(err != 0)
             return WSA_ERROR;
 #endif
-        if (bind(Socket, (struct sockaddr*)&Socket_info, sizeof(SOCKADDR_IN)) == -1){
+        if (err = bind(Socket, (struct sockaddr*)&Socket_info, sizeof(SOCKADDR_IN)); err == -1){
             WSACleanup();
             return BIND_FAIL;
         }

@@ -13,7 +13,8 @@ int main()
     mysock::server Server(5150);
     try
     {
-        Server.Listen();
+        if(int err = Server.Listen(); err != mysock::SUCESS)
+            throw mysock::exception<mysock::flag>(mysock::flag(err), "Listen fail");
         println("Listening");
         Server.Accept(foo);
         println("waiting for accept");
