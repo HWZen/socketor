@@ -15,7 +15,7 @@ mkdir build && cd build
 cmake ../
 cmake --build .
 ```
-The above command applies to windows and linux platforms
+The above command applies to Windows and Linux platforms
 
 ## use example
 

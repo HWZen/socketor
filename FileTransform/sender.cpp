@@ -1,9 +1,6 @@
 //
 // Created by HWZ on 2022/3/20.
 //
-#ifndef __cpp_concepts
-#define __cpp_concepts
-#endif
 
 #include <sock_client.h>
 #include <fast_io.h>

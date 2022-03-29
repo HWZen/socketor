@@ -1,6 +1,10 @@
 #include "sock_server.h"
 #include <memory>
 
+#ifdef I_OS_LINUX
+void WSACleanup(){}
+#endif
+
 namespace mysock
 {
     void Accept_call_back(socketor s)
@@ -15,6 +19,7 @@ namespace mysock
         WSAStartup(0x0202, &wsaData);
 
 #endif
+
         Socket_info.sin_family = AF_INET;
         Socket_info.sin_port = htons(Port);
         Socket_info.sin_addr.s_addr = htonl(INADDR_ANY);

@@ -1,7 +1,6 @@
 //
 // Created by HWZ on 2022/3/20.
 //
-#define __cpp_concepts
 #include <sock_server.h>
 #include <fast_io.h>
 #include "fileStruct.h"
