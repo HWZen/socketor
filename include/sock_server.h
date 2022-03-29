@@ -11,19 +11,12 @@
 #define SOCK_DEC
 #endif
 
-#ifdef I_OS_WIN
-#ifdef DEC
-#define SOCK_DEC  __declspec(dllexport)
-#else
-#define SOCK_DEC  __declspec(dllimport)
-#endif // DEC
-#endif // I_OS_WIN
 
 namespace mysock
 {
 
     void Accept_call_back(socketor s);
-    class SOCK_DEC server : public socketor
+    class server : public socketor
     {
     public:
         explicit server(int Port = DEFAULT_PORT);

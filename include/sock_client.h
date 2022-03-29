@@ -11,17 +11,9 @@
 #define SOCK_DEC
 #endif
 
-#ifdef I_OS_WIN
-#ifdef DEC
-#define SOCK_DEC  __declspec(dllexport)
-#else
-#define SOCK_DEC  __declspec(dllimport)
-#endif
-#endif
-
 namespace mysock
 {
-    class SOCK_DEC Client : public socketor
+    class Client : public socketor
     {
     public:
         explicit Client(const char *server_address = SERVER_ADDRESS, int port = DEFAULT_PORT);

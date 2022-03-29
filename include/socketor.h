@@ -42,14 +42,6 @@ typedef struct sockaddr_in SOCKADDR_IN;
 
 #endif // I_OS_LINUX
 
-#ifdef I_OS_WIN
-#ifdef DEC
-#define SOCK_DEC  __declspec(dllexport)
-#else
-#define SOCK_DEC  __declspec(dllimport)
-#endif // DEC
-#endif // I_OS_WIN
-
 
 #ifdef __GNUC__
 
@@ -83,7 +75,7 @@ namespace mysock
         GET_HOST_NAME_FAIL
     };
 
-    class SOCK_DEC socketor
+    class socketor
     {
     protected:
         SOCKADDR_IN Socket_info{};
