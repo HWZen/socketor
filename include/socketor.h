@@ -31,14 +31,9 @@
 typedef int SOCKET;
 typedef struct sockaddr_in SOCKADDR_IN;
 #define closesocket(x) close(x)
+#define SOCKET_ERROR -1
 
 #define TRUE 1
-
-#ifdef DEC
-#define SOCK_DEC
-#else
-#define SOCK_DEC
-#endif // DEC
 
 #endif // I_OS_LINUX
 

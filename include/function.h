@@ -11,7 +11,7 @@
 #ifdef I_OS_LINUX
 #include <time.h>
 
-void Sleep(int ms)
+inline void Sleep(int ms)
 {
     struct timeval delay;
     delay.tv_sec = 0;

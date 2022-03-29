@@ -48,7 +48,7 @@ void foo(mysock::socketor client)
 
     int *buf = new int{};
     do{
-        if(int i = client.receive(buf,4);i == SOCKET_ERROR){
+        if(int i = client.receive(buf,4);i <= SOCKET_ERROR){
             println(fast_io::c_stderr(), "recv err: ", i);
             break;
         }
