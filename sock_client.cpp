@@ -2,6 +2,11 @@
 #ifdef I_OS_WIN
 #include <ws2tcpip.h>
 #endif
+#include "fast_io.h"
+
+#ifdef I_OS_LINUX
+using IN_ADDR = in_addr;
+#endif
 
 mysock::Client::Client(const char *_server_address, int port)
 {
@@ -68,9 +73,9 @@ mysock::Client::Client(const char *_server_address, int port)
     char **pptr;
     struct hostent *hptr;
     char str[32];
-    if ((hptr = gethostbyname(server_address)) == NULL)
+    if ((hptr = gethostbyname(server_address.c_str())) == NULL)
     {
-        printf("  gethostbyname error for host:%s\n ", server_address);
+        println("  gethostbyname error for host:%s\n ", server_address);
         exit(0);
     }
     switch (hptr->h_addrtype)

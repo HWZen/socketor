@@ -13,3 +13,9 @@ using File = struct File{
     size_t fileSize{};
     std::byte sha256[256];
 };
+
+const size_t PACK_SIZE = 65536;
+using Pack = struct Pack{
+    size_t size;
+    char data[PACK_SIZE];
+};

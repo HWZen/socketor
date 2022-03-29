@@ -2,16 +2,17 @@
 #include <iostream>
 #include <fast_io.h>
 
+
 int main()
 {
     try
     {
-        mysock::Client client("hwzen.myds.me", 5150);
+        mysock::Client client("127.0.0.1", 5150);
 
-        bool check = client.connect2server();
+        int check = client.connect2server();
 
-        if(!check)
-            throw(mysock::exception<std::string>("connect fail"));
+        if(check != mysock::SUCESS)
+            throw(mysock::exception<std::string>(std::string("connect fail: ") + std::to_string(check)));
 
         for(int i{}; i<1000000;++i)
         {
@@ -22,8 +23,8 @@ int main()
         }
         int i = -1;
         client.rawSend(&i, sizeof(int));
-//        char buf[2];
-//        client.receive(buf,2);
+        char buf[2];
+        client.receive(buf,2);
     }
     catch (mysock::exception<int> &e)
     {

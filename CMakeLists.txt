@@ -10,7 +10,7 @@ include_directories(../fast_io/include)
 
 add_library(sockclient SHARED sock_client.cpp socketor.cpp)
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-target_link_libraries(sockclient -lwsock32)
+#target_link_libraries(sockclient -lwsock32)
 endif()
 target_compile_definitions(sockclient PRIVATE DEC)
 

@@ -56,7 +56,7 @@ namespace mysock
 
     private:
 #ifdef I_OS_WIN
-
+        WSADATA wsaData{};
 #endif
         std::shared_ptr<bool> hasListened;
 
