@@ -2,7 +2,6 @@
 #ifdef I_OS_WIN
 #include <ws2tcpip.h>
 #endif
-#include "fast_io.h"
 
 #ifdef I_OS_LINUX
 using IN_ADDR = in_addr;

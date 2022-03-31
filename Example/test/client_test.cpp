@@ -1,7 +1,27 @@
 #include "sock_client.h"
 #include <iostream>
+#ifdef __cpp_concepts
 #include <fast_io.h>
+#else
+template<typename ...Args>
+decltype(auto) print(Args &&...args)
+{
+    return (std::cout << ... << args);
+}
 
+template<typename ...Args>
+decltype(auto) println(Args &&...args)
+{
+    return (std::cout << ... << args) << "\n";
+}
+
+template<typename ...Args>
+decltype(auto) perr(Args &&...args)
+{
+    return (std::cerr << ... << args) << "\n";
+}
+
+#endif //__cpp_concepts
 
 int main()
 {
@@ -17,9 +37,6 @@ int main()
         for(int i{}; i<1000000;++i)
         {
             client.rawSend((const void*)&i, sizeof(int));
-//            char buf[2];
-//            client.receive(buf,2);
-//            println(buf[0]);
         }
         int i = -1;
         client.rawSend(&i, sizeof(int));
@@ -28,11 +45,11 @@ int main()
     }
     catch (mysock::exception<int> &e)
     {
-        std::cerr << e.date() << std::endl << "error code: " << e.date() << std::endl;
+         perr(e.date(), "\n", "error code: ", e.describe());
     }
     catch (mysock::exception<std::string> &e)
     {
-        std::cerr << e.date() << std::endl;
+        perr(e.what());
     }
 
     return 0;

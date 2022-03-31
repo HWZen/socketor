@@ -3,7 +3,7 @@
 A lib which wrap and extend sock
 
 ## require
-* c++20 compiler (msvc 19.30 , gcc 12.0)
+* c++17 compiler
 * [fast_io](https://gitee.com/qabeowjbtkwb/fast_io.git) lib
 * cmake
 
@@ -19,7 +19,7 @@ The above command applies to Windows and Linux platforms
 
 ## use example
 
-You can look at [server_test.cpp](./server_test.cpp) and [client_test.cpp](./client_test.cpp)
+You can look at [server_test.cpp](Example/test/server_test.cpp) and [client_test.cpp](Example/test/client_test.cpp)
 
 ## feature
 * Cross platforms

@@ -2,7 +2,28 @@
 #include <iostream>
 #include <string>
 #include "function.h"
+#ifdef __cpp_concepts
 #include <fast_io.h>
+#else
+template<typename ...Args>
+decltype(auto) print(Args &&...args)
+{
+    return (std::cout << ... << args);
+}
+
+template<typename ...Args>
+decltype(auto) println(Args &&...args)
+{
+    return (std::cout << ... << args) << "\n";
+}
+
+template<typename ...Args>
+decltype(auto) perr(Args &&...args)
+{
+    return (std::cerr << ... << args) << "\n";
+}
+
+#endif //__cpp_concepts
 
 using namespace std;
 
@@ -24,18 +45,22 @@ int main()
         switch (e.date())
         {
         case mysock::flag::BIND_FAIL:
-            cout << EnumName<mysock::flag,mysock::flag::BIND_FAIL>() << endl;
+            perr(EnumName<mysock::flag,mysock::flag::BIND_FAIL>());
             break;
         case mysock::flag::LISTEN_FAIL:
-            cout << EnumName<mysock::flag,mysock::flag::LISTEN_FAIL>() << endl;
+            perr(EnumName<mysock::flag,mysock::flag::LISTEN_FAIL>());
             break;
         case mysock::LISTEN_SUCESS:
+            break;
+        default:
+            perr("unknow error: ", e.date());
+            perr("error description: ", e.what());
             break;
         }
     }
     catch (std::exception &e)
     {
-        cerr << e.what() << endl;
+        perr(e.what());
     }
 
 }
@@ -49,7 +74,7 @@ void foo(mysock::socketor client)
     int *buf = new int{};
     do{
         if(int i = client.receive(buf,4);i <= SOCKET_ERROR){
-            println(fast_io::c_stderr(), "recv err: ", i);
+            perr("recv err: ", i);
             break;
         }
         if(*buf == -1)
