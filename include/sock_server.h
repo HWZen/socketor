@@ -16,10 +16,12 @@ namespace mysock
 {
 
     void Accept_call_back(socketor s);
-    class server : public socketor
+    class server : protected socketor
     {
     public:
         explicit server(int Port = DEFAULT_PORT);
+
+
 
         server(const server &s) = default;
 
@@ -32,17 +34,7 @@ namespace mysock
         // 受理连接并调用接收函数
         int Accept(void(* call_back)(socketor));
 
-        void Send(const std::string &str) override
-        {
-            socketor::Send(str);
-        }
-
-        void rawSend(const void *str, size_t len)
-        {
-            socketor::Send(str, len);
-        }
-
-        void close_connect();
+        void close_server();
         static void close_connect(socketor s);
 
         ~server();

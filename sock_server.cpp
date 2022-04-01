@@ -76,7 +76,7 @@ namespace mysock
 
     }
 
-    void server::close_connect()
+    void server::close_server()
     {
         if (hasListened && *hasListened == true)
         {
