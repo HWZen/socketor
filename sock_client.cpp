@@ -73,10 +73,7 @@ mysock::Client::Client(const char *_server_address, int port)
     struct hostent *hptr;
     char str[32];
     if ((hptr = gethostbyname(server_address.c_str())) == NULL)
-    {
-        println("  gethostbyname error for host:%s\n ", server_address);
-        exit(0);
-    }
+        return GET_HOST_NAME_FAIL;
     switch (hptr->h_addrtype)
     {
     case AF_INET:
@@ -85,28 +82,15 @@ mysock::Client::Client(const char *_server_address, int port)
         server_address = inet_ntop(hptr->h_addrtype, hptr->h_addr, str, sizeof(str));
         break;
     default:
-        printf(" unknown address type\n ");
-        exit(0);
-        break;
+        return GET_HOST_NAME_FAIL;
     }
 
-#endif
+#endif //I_OS_LINUX
 
-    // 创建客户端套节字
     IN_ADDR tmp;
     tmp.s_addr = inet_addr(server_address.c_str());
     Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     Socket_info = {PF_INET, htons(server_port), tmp};
-    //AF_INET指明使用TCP/IP协议族；
-    //SOCK_STREAM, IPPROTO_TCP具体指明使用TCP协议
-    // 指明远程服务器的地址信息(端口号、IP地址等)
-    // memset(&server, 0, sizeof(SOCKADDR_IN));            //先将保存地址的server置为全0
-    // server.sin_family = PF_INET;                        //声明地址格式是TCP/IP地址格式
-    // server.sin_port = htons(port);                          //指明连接服务器的端口号，htons()用于 converts values between the host and network byte order
-    // server.sin_addr.s_addr = inet_addr(server_address.c_str());       //指明连接服务器的IP地址
-    //结构SOCKADDR_IN的sin_addr字段用于保存IP地址，sin_addr字段也是一个结构体，sin_addr.s_addr用于最终保存IP地址
-    //inet_addr()用于将 形如的"127.0.0.1"字符串转换为IP地址格式
-
     if(connect(Socket, (struct sockaddr *)&Socket_info, sizeof(SOCKADDR_IN))<0)
         return CONNECT_FAIL;
     return SUCESS;
