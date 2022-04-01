@@ -5,8 +5,6 @@
 #ifndef SOCKETOR_FILESTRUCT_H
 #define SOCKETOR_FILESTRUCT_H
 
-#endif //SOCKETOR_FILESTRUCT_H
-
 using File = struct File{
     char fileName[128]{};
     char filePath[256]{};
@@ -19,3 +17,7 @@ using Pack = struct Pack{
     size_t size;
     char data[PACK_SIZE];
 };
+
+
+#endif //SOCKETOR_FILESTRUCT_H
+
