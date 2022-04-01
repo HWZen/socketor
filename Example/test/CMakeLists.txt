@@ -10,7 +10,7 @@ else()
     message("socketor no found")
 endif()
 
-include_directories(${SOCKETOR_INCLUDE_DIR})
+
 
 add_executable(servertest server_test.cpp)
 add_executable(clienttest client_test.cpp)

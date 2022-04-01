@@ -11,7 +11,6 @@ else()
     message("socketor no found")
 endif()
 
-include_directories(${SOCKETOR_INCLUDE_DIR})
 include_directories("E:/Github/fast_io/include")
 
 add_executable(receiver receiver.cpp)
