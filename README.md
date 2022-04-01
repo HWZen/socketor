@@ -3,9 +3,9 @@
 A lib which wrap and extend sock
 
 ## require
-* c++17 compiler
-* [fast_io](https://gitee.com/qabeowjbtkwb/fast_io.git) lib
+* c++ compiler support c++17
 * cmake
+* some examples need [fast_io](https://gitee.com/qabeowjbtkwb/fast_io.git) lib and c++20 support 
 
 ## build
 ```shell
