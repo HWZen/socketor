@@ -15,7 +15,7 @@
 
 #endif
 
-#define MAX_SOCKET_SIZE 4096
+#define MAX_SOCKET_SIZE 0x10000
 
 #ifdef I_OS_LINUX
 

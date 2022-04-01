@@ -1,7 +1,7 @@
 //
 // Created by HWZ on 2022/3/20.
 //
-#include "include/sock_server.h"
+#include "sock_server.h"
 #include <fast_io.h>
 #include "fileStruct.h"
 #include <fast_io.h>
@@ -21,6 +21,7 @@ int main()
     }
 
     s.Accept(foo);
+    s.close_server();
 
 }
 

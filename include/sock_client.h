@@ -37,7 +37,6 @@ namespace mysock
     private:
 #ifdef I_OS_WIN
         WSADATA wsaData{};
-        size_t _msgSize{};
 #endif
         // 服务器真实地址
         std::string server_address;
