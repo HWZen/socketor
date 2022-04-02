@@ -1,6 +1,6 @@
 #include "sock_client.h"
 #include <iostream>
-#if __has_include("fast_io.h")
+#if __has_include("fast_io.h") && defined(__cpp_concepts)
 #include <fast_io.h>
 #else
 template<typename ...Args>

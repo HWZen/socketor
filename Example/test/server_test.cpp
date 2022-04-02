@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include "function.h"
-#if __has_include("fast_io.h")
+#if __has_include("fast_io.h") && defined(__cpp_concepts)
 #include <fast_io.h>
 #else
 template<typename ...Args>
