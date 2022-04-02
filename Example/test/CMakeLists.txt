@@ -1,9 +1,10 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.16)
 project(test)
 
 set(CMAKE_CXX_STANDARD 17)
 # please change it to you socketor build path
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "E:/Github/socketor/cmake-build-debug-visual-studio")
+option(SOCKETOR_PATH /usr/local/socketor)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${SOCKETOR_PATH})
 find_package(socketor)
 if(SOCKETOR_FOUND)
     message("Found socketor")
