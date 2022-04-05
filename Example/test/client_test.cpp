@@ -1,27 +1,39 @@
 #include "sock_client.h"
-#include <iostream>
 #if __has_include("fast_io.h") && defined(__cpp_concepts)
 #include <fast_io.h>
 #else
-template<typename ...Args>
+
+#include <iostream>
+#ifdef __cpp_concepts
+template <typename T>
+concept can_print = requires(std::ostream os, T ty)
+{
+    os << ty;
+};
+#else
+
+#define can_print typename
+#endif //__cpp_concepts
+
+template<can_print ...Args>
 decltype(auto) print(Args &&...args)
 {
     return (std::cout << ... << args);
 }
 
-template<typename ...Args>
+template<can_print ...Args>
 decltype(auto) println(Args &&...args)
 {
     return (std::cout << ... << args) << "\n";
 }
 
-template<typename ...Args>
+template<can_print ...Args>
 decltype(auto) perr(Args &&...args)
 {
     return (std::cerr << ... << args) << "\n";
 }
 
-#endif //__cpp_concepts
+#endif //__has_include("fast_io.h") && defined(__cpp_concepts)
 
 int main()
 {
