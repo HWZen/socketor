@@ -10,35 +10,59 @@
 #include <cstring>
 #include "fileStruct.h"
 #include <algorithm>
+#include <unordered_map>
+#include <string>
 
 #ifdef I_OS_LINUX
 #define memcpy_s(dst, dstLen, src, srcLen) memcpy(dst, src, srcLen);
 #endif
 
 
+
+std::tuple<int, std::unordered_map<std::string, std::string>> paramParse(int argc, char** argv);
+
+
 int main(int argc, char* argv[])
 try
 {
-    if (argc < 3)
+    auto[errorCode, parseRes] = paramParse(argc, argv);
+    if (errorCode == -1)
     {
-        perrln("please select a file path as parm");
+        println(fast_io::out(), "params: \n"
+                                "<transform file path> [-h <host>][-p <port>]\n"
+                                "default host: 127.0.0.1\n"
+                                "default port: " + std::to_string(default_port));
         return 1;
     }
-    mysock::Client c(argv[2], 5150);
+
+    if(!parseRes.count("unkonwnParam2")){
+        println(fast_io::out(), "params: \n"
+                                "<transform file path> [-h <host>][-p <port>]\n"
+                                "default host: 127.0.0.1\n"
+                                "default port: " + std::to_string(default_port));
+        return 1;
+    }
+
+    int port = (parseRes.count("p") ? std::stoi(parseRes["p"]) : default_port);
+    std::string serverAddr = (parseRes.count("h") ? parseRes["h"] : "127.0.0.1");
+
+
+
+    mysock::Client c(serverAddr.c_str(), port);
     if (int err = c.connect2server();err != mysock::SUCESS)
     {
         perrln("connect fail: ", err);
         return 1;
     }
     using namespace fast_io::mnp;
-    fast_io::ibuf_file ibuf(::fast_io::mnp::os_c_str(argv[1]));
+    fast_io::ibuf_file ibuf(os_c_str(parseRes["unkonwnParam2"].c_str()));
 
     fast_io::sha256_context ctx;
     auto transmitted{ transmit(as_file(ctx), ibuf) };
     ctx.do_final();
     ibuf.close();
 
-    std::string name = argv[1];
+    std::string name = parseRes["unkonwnParam2"];
     auto nameIt = name.end() - 1;
     while (nameIt > name.begin() && *nameIt != '\\' && *nameIt != '/')
     {
@@ -46,13 +70,13 @@ try
     }
     name = { nameIt + 1, name.end() };
 
-    fast_io::native_file_loader loader(os_c_str(argv[1]));
+    fast_io::native_file_loader loader(os_c_str(parseRes["unkonwnParam2"].c_str()));
     File f;
     std::strcpy(f.fileName, name.c_str());
-    std::strcpy(f.filePath, argv[1]);
+    std::strcpy(f.filePath, parseRes["unkonwnParam2"].c_str());
     f.fileSize = loader.size();
     ctx.digest_to_byte_ptr(f.sha256);
-    println(fast_io::out() ,hash_digest(ctx));
+    println(fast_io::out(), hash_digest(ctx));
 
 
     char* pfile = new char[f.fileSize];
@@ -60,12 +84,36 @@ try
 
     c.rawSend(&f, sizeof(f));
     c.rawSend(pfile, f.fileSize);
-    println(fast_io::out() ,"sended");
+    println(fast_io::out(), "sended");
     c.receive();
-    println(fast_io::out() ,"recved");
+    println(fast_io::out(), "recved");
 
 }
-catch (fast_io::error e)
+catch (fast_io::error &e)
 {
     perrln(e);
+}
+
+
+std::tuple<int, std::unordered_map<std::string, std::string>> paramParse(int argc, char** argv)
+{
+    using std::unordered_map, std::string;
+    unordered_map<string, string> res;
+    int cnt{};
+    for (int i{}; i < argc; ++i)
+    {
+        if (argv[i][0] == '-')
+        {
+            if (i == argc - 1)
+                return { -1, {}};
+            else
+            {
+                res[{ argv[i] + 1 }] = argv[i + 1];
+                ++i;
+            }
+        }
+        else
+            res["unkonwnParam" + std::to_string(++cnt)] = argv[i];
+    }
+    return { 1, res };
 }

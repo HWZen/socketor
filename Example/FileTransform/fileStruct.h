@@ -18,6 +18,8 @@ using Pack = struct Pack{
     char data[PACK_SIZE];
 };
 
+inline const int default_port = 5150;
+
 
 #endif //SOCKETOR_FILESTRUCT_H
 
