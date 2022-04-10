@@ -4,6 +4,7 @@
 #include <thread>
 #include <unordered_map>
 #include <memory>
+#include <functional>
 
 #define DEFAULT_PORT 5150
 
@@ -34,6 +35,16 @@ namespace mysock
         // 受理连接并调用接收函数
         int Accept(void(* call_back)(socketor));
 
+        template<typename Fn, typename ...Args>
+        int Accept(Fn &&callBackFun, Args&& ...args){
+            socketor client;
+            int err = rawAccept(client);
+            if (err != SUCESS)
+                return err;
+            std::invoke(callBackFun,args...,client);
+            return SUCESS;
+        }
+
         void close_server();
         static void close_connect(socketor s);
 
@@ -44,6 +55,8 @@ namespace mysock
         WSADATA wsaData{};
 #endif
         std::shared_ptr<bool> hasListened;
+
+        int rawAccept(socketor& socketBuf);
 
 
 
