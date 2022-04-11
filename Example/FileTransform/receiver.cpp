@@ -47,6 +47,7 @@ void foo(mysock::socketor c){
 
     char *buf = new char[1024];
     size_t it = f.fileSize;
+    int schedule{};
     while(it > 0)
     {
 
@@ -55,6 +56,10 @@ void foo(mysock::socketor c){
             break;
         fwrite(buf, recLen, 1, pFile);
         it -= recLen;
+        if(schedule < (double)(f.fileSize - it) / (double)f.fileSize * 100){
+            schedule = (double)(f.fileSize - it) / (double)f.fileSize * 100;
+            println(fast_io::out(), schedule);
+        }
     }
     fclose(pFile);
 

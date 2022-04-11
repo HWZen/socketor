@@ -48,6 +48,7 @@ namespace mysock
         void close_server();
         static void close_connect(socketor s);
 
+
         ~server();
 
     private:

@@ -57,9 +57,6 @@ namespace mysock
         if (err != SUCESS)
             return err;
         call_back(client);
-        // 接受成功后：
-        // cout << "Accepted rawClient:" << client.address() << ":" << client.port() << endl;
-        // 新建线程，在新线程中进行后续的接发通信操作
         return SUCESS;
 
     }
