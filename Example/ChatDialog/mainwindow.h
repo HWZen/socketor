@@ -18,8 +18,10 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
+    // 连接服务器
     void tryToConnectToServer(const QString& host, const QString& name, int port);
 
+    // 创建服务器
     void tryToCreateServer(const QString& name, int port);
 
 private:
@@ -30,7 +32,9 @@ private:
 public:
 signals:
     void connectSuccess();
+
     void connectFailed(QString err);
+
     void stopSignal();
 
 };

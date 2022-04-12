@@ -9,6 +9,7 @@
 #include "mainwindow.h"
 #include "welcome.h"
 
+// MainºÃ≥–QObject£¨“‘±„Ω®¡¢connect
 class Main : public QObject
 {
 Q_OBJECT

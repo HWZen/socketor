@@ -15,7 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    // 向监听线程发送关闭信号
     emit stopSignal();
+
     delete ui;
     delete server;
 }
@@ -37,6 +39,7 @@ void MainWindow::tryToConnectToServer(const QString& host, const QString& name, 
         ui->label->setText(QString::fromLocal8Bit("连接地址： ") + host + QString::fromLocal8Bit(" 端口： ") + QString::number(port));
         auto *clientThread = new ClientThread(client, this);
         clientThread->SetUserName(name);
+
         connect(ui->sendButton, &QPushButton::clicked, this, [=](){
             QString msg = ui->textEdit->toPlainText();
             if(msg.isEmpty())
@@ -94,7 +97,7 @@ void MainWindow::tryToCreateServer(const QString& name, int port)
         ui->textBrowser->append(name +  "(me):\n" + msg + "\n\n");
         ui->textEdit->clear();
     });
-    connect(clientThread, &ClientThread::recvMsg, this, [=](QString msg){
+    connect(clientThread, &ClientThread::recvMsg, this, [=](const QString& msg){
         ui->textBrowser->append(msg);
         ui->textBrowser->append("\n\n");
     });
