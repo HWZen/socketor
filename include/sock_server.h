@@ -6,12 +6,6 @@
 #include <memory>
 #include <functional>
 
-#define DEFAULT_PORT 5150
-
-#ifdef I_OS_LINUX
-#define SOCK_DEC
-#endif
-
 
 namespace mysock
 {
@@ -59,7 +53,8 @@ namespace mysock
 
         int rawAccept(socketor& socketBuf);
 
-
+    public:
+        static const int DEFAULT_PORT = 5150;
 
     };
 } // namespace mysock

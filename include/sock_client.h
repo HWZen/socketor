@@ -3,13 +3,7 @@
 #include <string>
 #include <memory>
 
-//定义程序中使用的常量
-#define SERVER_ADDRESS "127.0.0.1" //服务器端IP地址
-#define DEFAULT_PORT 6800          //服务器的端口号
 
-#ifdef I_OS_LINUX
-#define SOCK_DEC
-#endif
 
 namespace mysock
 {
@@ -34,6 +28,8 @@ namespace mysock
 
         void close_connect();
 
+        ~Client() override;
+
     private:
 #ifdef I_OS_WIN
         WSADATA wsaData{};
@@ -44,5 +40,10 @@ namespace mysock
         int server_port;
 
         std::shared_ptr<bool> hasConnected;
+
+    public:
+        //定义程序中使用的常
+        constexpr static char const * const SERVER_ADDRESS = "127.0.0.1"; //服务器端IP地址
+        static const int DEFAULT_PORT = 5150;
     };
 } // namespace mysock

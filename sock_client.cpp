@@ -98,10 +98,26 @@ mysock::Client::Client(const char *_server_address, int port)
 
 void mysock::Client::close_connect()
 {
-    closesocket(Socket);
+    if(!*hasConnected)
+    {
+        return;
+    }
+    else
+    {
+        closesocket(Socket);
 #ifdef I_OS_WIN
-    WSACleanup();
+        WSACleanup();
 #endif
+        hasConnected = false;
+    }
+
+}
+
+mysock::Client::~Client()
+{
+    if(hasConnected.use_count() == 1){
+        close_connect();
+    }
 }
 
 
