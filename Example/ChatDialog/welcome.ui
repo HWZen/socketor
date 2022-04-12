@@ -598,7 +598,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       </spacer>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_2">
+      <widget class="QRadioButton" name="clientModeButton">
        <property name="text">
         <string>连接服务器</string>
        </property>
@@ -621,7 +621,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       </spacer>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton">
+      <widget class="QRadioButton" name="serverModeButton">
        <property name="text">
         <string>新建服务器</string>
        </property>
@@ -658,7 +658,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       </spacer>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit">
+      <widget class="QLineEdit" name="hostEdit">
        <property name="text">
         <string>服务器地址(e.g 127.0.0.1:5150 端口号默认5150)</string>
        </property>
@@ -680,7 +680,44 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="2,10,2">
+     <item>
+      <spacer name="horizontalSpacer_8">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="nameEdit">
+       <property name="text">
+        <string>聊天昵称</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_9">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0,0">
      <item>
       <spacer name="horizontalSpacer_3">
        <property name="orientation">
@@ -695,7 +732,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="connectButton">
        <property name="minimumSize">
         <size>
          <width>100</width>

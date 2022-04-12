@@ -597,7 +597,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
      <widget class="QTextEdit" name="textEdit"/>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
@@ -612,7 +612,13 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="sendButton">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
          <string>发送</string>
         </property>

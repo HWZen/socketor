@@ -86,16 +86,16 @@ namespace mysock
         virtual ~socketor() = default;
 
         // 发送函数
-        virtual void Send(const void *str, size_t len);
-        virtual void Send(const std::string &str);
+        virtual void Send(const void *str, size_t len) const;
+        virtual void Send(const std::string &str) const;
 
         // 接收函数
-        virtual int receive(void *buf, size_t len);
-        virtual std::string receive();
+        virtual int receive(void *buf, size_t len) const;
+        virtual std::string receive() const;
 
 
         // Socket地址
-        std::string address()
+        std::string address() const
         {
             return Address;
         };

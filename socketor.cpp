@@ -31,20 +31,20 @@ namespace mysock
         Port = ntohs(socket_info.sin_port);
     }
 
-    void socketor::Send(const void *str, size_t len)
+    void socketor::Send(const void *str, size_t len) const
     {
         send(Socket, (char *)str, len, 0);
     }
-    void socketor::Send(const std::string &str)
+    void socketor::Send(const std::string &str) const
     {
         send(Socket, str.c_str(), str.size(), 0);
     }
 
-    int socketor::receive(void *buf, size_t len)
+    int socketor::receive(void *buf, size_t len) const
     {
         return recv(Socket, (char *)buf, len, 0);
     }
-    std::string socketor::receive()
+    std::string socketor::receive() const
     {
         char buf[MAX_SOCKET_SIZE];
         int ret = recv(Socket, buf, MAX_SOCKET_SIZE, 0);

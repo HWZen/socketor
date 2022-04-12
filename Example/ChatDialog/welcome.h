@@ -15,8 +15,14 @@ public:
     explicit Welcome(QWidget *parent = nullptr);
     ~Welcome() override;
 
+    void showError(const QString &error);
 private:
     Ui::Welcome *ui;
+public:
+signals:
+    void connectToServer(const QString& host, const QString& name, int port);
+    void createServer(const QString& name, int port);
+
 };
 
 #endif // WELCOME_H

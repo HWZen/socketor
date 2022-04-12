@@ -15,7 +15,7 @@ namespace mysock
         // 连接至服务器
         [[nodiscard]]int connect2server();
 
-        void Send(const std::string &str) override
+        void Send(const std::string &str) const override
         {
             socketor::Send(str);
         }
