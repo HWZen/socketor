@@ -83,6 +83,8 @@ namespace mysock
 
         socketor(SOCKET target_socket, SOCKADDR_IN socket_info);
 
+        virtual ~socketor() = default;
+
         // ·¢ËÍº¯Êý
         virtual void Send(const void *str, size_t len);
         virtual void Send(const std::string &str);

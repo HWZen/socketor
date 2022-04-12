@@ -43,7 +43,7 @@ namespace mysock
         static void close_connect(socketor s);
 
 
-        ~server();
+        ~server() override;
 
     private:
 #ifdef I_OS_WIN
