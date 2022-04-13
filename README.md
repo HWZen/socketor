@@ -3,7 +3,7 @@
 A lib which wrap and extend sock
 
 ## require
-* c++ compiler support c++17
+* c++ compiler support c++11
 * cmake
 * some examples need [fast_io](https://gitee.com/qabeowjbtkwb/fast_io.git) lib and c++20 support 
 
