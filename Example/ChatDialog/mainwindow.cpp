@@ -48,7 +48,7 @@ void MainWindow::tryToConnectToServer(const QString& host, const QString& name, 
             ui->textBrowser->append(name + "(me):\n" + msg + "\n\n");
             ui->textEdit->clear();
         });
-        connect(clientThread, &ClientThread::recvMsg, this, [=](QString msg){
+        connect(clientThread, &ClientThread::recvMsg, this, [=](const QString& msg){
             ui->textBrowser->append(msg);
             ui->textBrowser->append("\n\n");
         });
