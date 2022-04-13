@@ -35,8 +35,8 @@ namespace mysock
         if (*hasListened)
             return LISTEN_SUCESS;
 
-
-        if (int err = bind(Socket, (struct sockaddr*)&Socket_info, sizeof(SOCKADDR_IN)); err == -1)
+        int err = bind(Socket, (struct sockaddr*)&Socket_info, sizeof(SOCKADDR_IN));
+        if (err == -1)
         {
             WSACleanup();
             return BIND_FAIL;
