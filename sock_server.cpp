@@ -61,6 +61,11 @@ namespace mysock
 
     }
 
+    int server::Accept(socketor& client)
+    {
+        return rawAccept(client);
+    }
+
     void server::close_server()
     {
         if (hasListened && *hasListened == true)
@@ -125,4 +130,6 @@ namespace mysock
         socketBuf = client;
         return SUCESS;
     }
+
+
 }// namespace mysock

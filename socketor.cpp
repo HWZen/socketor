@@ -40,19 +40,20 @@ namespace mysock
         send(Socket, str.c_str(), str.size(), 0);
     }
 
-    int socketor::receive(void *buf, size_t len) const
+    int64_t socketor::receive(void *buf, size_t len) const
     {
         return recv(Socket, (char *)buf, len, 0);
     }
     std::string socketor::receive() const
     {
         char buf[MAX_SOCKET_SIZE];
-        int ret = recv(Socket, buf, MAX_SOCKET_SIZE, 0);
+        auto ret = recv(Socket, buf, MAX_SOCKET_SIZE, 0);
         if (ret <= 0)
             return "lose connect";
         buf[ret] = '\0';
         return buf;
     }
+
 
 } // namespace mysock
 

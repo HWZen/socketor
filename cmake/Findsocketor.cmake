@@ -1,4 +1,4 @@
-message("finding socketor")
+message(STATUS "finding socketor")
 
 FIND_PATH(SOCKETOR_INCLUDE_DIR socketor.h ${CMAKE_MODULE_PATH}/include)
 message(STATUS "include dir: ${SOCKETOR_INCLUDE_DIR}")

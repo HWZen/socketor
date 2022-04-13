@@ -39,6 +39,8 @@ namespace mysock
             return SUCESS;
         }
 
+        int Accept(socketor& client);
+
         void close_server();
         static void close_connect(socketor s);
 

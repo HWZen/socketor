@@ -90,7 +90,7 @@ namespace mysock
         virtual void Send(const std::string &str) const;
 
         // 接收函数
-        virtual int receive(void *buf, size_t len) const;
+        virtual int64_t receive(void *buf, size_t len) const;
         virtual std::string receive() const;
 
 
@@ -105,6 +105,37 @@ namespace mysock
         {
             return Port;
         };
+
+        // 设置接收超时时间
+        [[nodiscard("should be verified")]]auto setRecvTimeout(int timeout)
+        {
+#ifdef I_OS_LINUX
+            struct timeval tv;
+        tv.tv_sec = timeout / 1000;
+        tv.tv_usec = (timeout % 1000) * 1000;
+        return setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(struct timeval));
+#endif // I_OS_LINUX
+
+#ifdef I_OS_WIN
+            return setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout));
+#endif // I_OS_WIN
+
+        }
+
+        // 设置发送超时时间
+        [[nodiscard("should be verified")]]auto setSendTimeout(int timeout)
+        {
+#ifdef I_OS_LINUX
+            struct timeval tv;
+        tv.tv_sec = timeout / 1000;
+        tv.tv_usec = (timeout % 1000) * 1000;
+        return setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&tv, sizeof(struct timeval));
+#endif // I_OS_LINUX
+
+#ifdef I_OS_WIN
+            return setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout));
+#endif // I_OS_WIN
+        }
 
         SOCKET getRawSocket(){return Socket;}
     };
