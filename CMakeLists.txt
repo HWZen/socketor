@@ -14,3 +14,5 @@ add_library(sockserver STATIC sock_server.cpp socketor.cpp)
 
 file(COPY include DESTINATION ./)
 file(COPY cmake/Findsocketor.cmake DESTINATION ./)
+
+add_subdirectory(google_test)

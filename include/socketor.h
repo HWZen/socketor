@@ -11,7 +11,10 @@
 #ifdef I_OS_WIN
 
 #include <WinSock2.h>
+
 #pragma comment(lib, "ws2_32.lib")
+
+#include <mutex>
 
 #endif
 
@@ -57,7 +60,8 @@ namespace std{
 
 namespace mysock
 {
-    enum flag{
+    enum flag
+    {
         SUCESS,
         LISTEN_SUCESS = SUCESS,
         BIND_FAIL,
@@ -74,7 +78,7 @@ namespace mysock
     {
     protected:
         SOCKADDR_IN Socket_info{};
-        std::string Address;
+        std::string Address{};
         int Port{};
 
         SOCKET Socket{};
@@ -86,11 +90,13 @@ namespace mysock
         virtual ~socketor() = default;
 
         // 发送函数
-        virtual void Send(const void *str, size_t len) const;
-        virtual void Send(const std::string &str) const;
+        virtual void Send(const void* str, size_t len) const;
+
+        virtual void Send(const std::string& str) const;
 
         // 接收函数
-        virtual int64_t receive(void *buf, size_t len) const;
+        virtual int64_t receive(void* buf, size_t len) const;
+
         virtual std::string receive() const;
 
 
@@ -117,7 +123,7 @@ namespace mysock
 #endif // I_OS_LINUX
 
 #ifdef I_OS_WIN
-            return setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout));
+            return setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
 #endif // I_OS_WIN
 
         }
@@ -133,11 +139,23 @@ namespace mysock
 #endif // I_OS_LINUX
 
 #ifdef I_OS_WIN
-            return setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout));
+            return setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout));
 #endif // I_OS_WIN
         }
 
-        SOCKET getRawSocket(){return Socket;}
+        SOCKET getRawSocket()
+        {
+            return Socket;
+        }
+
+    protected:
+#ifdef I_OS_WIN
+
+        static inline WSADATA wsaData{};
+        static inline std::mutex wsa_mutex{};
+        static inline int wsaStartupCount{};
+
+#endif
     };
 
     template<typename Ty>
@@ -146,12 +164,22 @@ namespace mysock
     private:
         Ty error_date;
     public:
-        Ty date(){return error_date;}
-        const char *describe(){return exception::what();}
-        explicit exception(Ty date): error_date(date), std::exception(){}
-        exception(Ty date, const char *describe): error_date(date), std::exception(describe){}
+        Ty date()
+        {
+            return error_date;
+        }
+
+        const char* describe()
+        {
+            return exception::what();
+        }
+
+        explicit exception(Ty date) : error_date(date), std::exception(){}
+
+        exception(Ty date, const char* describe) : error_date(date), std::exception(describe){}
 
     };
+
 
 
 } // namespace mysock

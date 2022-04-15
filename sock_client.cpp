@@ -20,24 +20,34 @@ mysock::Client::Client(const char *_server_address, int port)
 #ifdef I_OS_WIN
 
     // Initialize Windows socket library
-    WSAStartup(0x0202, &wsaData);
-    WORD wVersionRequested = 0;
     int err = 0;
-
-    wVersionRequested = MAKEWORD(2, 2);
-
-    err = WSAStartup(wVersionRequested, &wsaData);
-
-    if (err != 0)
-        return WSA_ERROR;
+    wsa_mutex.lock();
+    if(wsaStartupCount == 0){
+        WORD wVersionRequested = 0;
 
 
-    if (LOBYTE(wsaData.wVersion) != 2 ||
-        HIBYTE(wsaData.wVersion) != 2)
-    {
-        WSACleanup();
-        return BYTE_FAIL;
+        wVersionRequested = MAKEWORD(2, 2);
+
+        err = WSAStartup(wVersionRequested, &wsaData);
+        if(err != 0){
+            wsa_mutex.unlock();
+            return WSA_ERROR;
+        }
+
+        if (LOBYTE(wsaData.wVersion) != 2 ||
+            HIBYTE(wsaData.wVersion) != 2)
+        {
+            WSACleanup();
+            wsa_mutex.unlock();
+            return BYTE_FAIL;
+        }
+        ++wsaStartupCount;
     }
+
+
+
+
+// DNS
 #ifdef _MSC_VER
     char **pptr = nullptr;
     HOSTENT *pHostEntry = gethostbyname(server_address.c_str());
@@ -59,8 +69,6 @@ mysock::Client::Client(const char *_server_address, int port)
     }
     else{
         err = WSAGetLastError();
-
-        WSACleanup();
         return GET_HOST_NAME_FAIL;
     }
 #endif //_MSC_VER
@@ -103,13 +111,18 @@ void mysock::Client::close_connect()
     {
         return;
     }
-    else
+    else if(hasConnected.use_count() == 1 && *hasConnected)
     {
         closesocket(Socket);
 #ifdef I_OS_WIN
-        WSACleanup();
+        wsa_mutex.lock();
+        if(wsaStartupCount == 1)
+        {
+            WSACleanup();
+            --wsaStartupCount;
+        }
+        wsa_mutex.unlock();
 #endif
-        hasConnected = false;
     }
 
 }

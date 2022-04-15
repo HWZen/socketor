@@ -12,14 +12,17 @@ namespace mysock
         closesocket(s.getRawSocket());
     }
 
-    server::server(int Port)
+    server::server(uint16_t Port)
     {
 #ifdef I_OS_WIN
-
-        WSAStartup(0x0202, &wsaData);
-
+        wsa_mutex.lock();
+        if(wsaStartupCount == 0)
+        {
+            WSAStartup(0x0202, &wsaData);
+        }
+        ++wsaStartupCount;
+        wsa_mutex.unlock();
 #endif
-
         Socket_info.sin_family = AF_INET;
         Socket_info.sin_port = htons(Port);
         Socket_info.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -72,9 +75,6 @@ namespace mysock
         {
             closesocket(Socket);
             *hasListened = false;
-#ifdef I_OS_WIN
-            WSACleanup();
-#endif
         }
     }
 
@@ -83,15 +83,15 @@ namespace mysock
         closesocket(s.getRawSocket());
     }
 
-    server::server(server&& s) noexcept
+    server::server(uint16_t Port) noexcept
     {
-        this->Socket = s.Socket;
-        s.Socket = 0;
-        this->Socket_info = s.Socket_info;
-        s.Socket_info = SOCKADDR_IN{};
+        this->Socket = Port.Socket;
+        Port.Socket = 0;
+        this->Socket_info = Port.Socket_info;
+        Port.Socket_info = SOCKADDR_IN{};
 
-        this->hasListened = s.hasListened;
-        s.hasListened = nullptr;
+        this->hasListened = Port.hasListened;
+        Port.hasListened = nullptr;
     }
 
     server::~server()
@@ -100,7 +100,9 @@ namespace mysock
         {
             closesocket(Socket);
 #ifdef I_OS_WIN
-            WSACleanup();
+            wsa_mutex.lock();
+            if (--wsaStartupCount == 0)
+                WSACleanup();
 #endif
         }
 
@@ -130,6 +132,7 @@ namespace mysock
         socketBuf = client;
         return SUCESS;
     }
+
 
 
 }// namespace mysock

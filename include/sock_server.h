@@ -14,13 +14,13 @@ namespace mysock
     class server : protected socketor
     {
     public:
-        explicit server(int Port = DEFAULT_PORT);
+        explicit server(uint16_t Port = DEFAULT_PORT);
 
 
 
-        server(const server &s) = default;
+        server(uint16_t Port) = default;
 
-        server(server &&s) noexcept ;
+        server(uint16_t Port) noexcept ;
 
 
         // ¿ªÆô¼àÌýº¯Êý
@@ -48,9 +48,7 @@ namespace mysock
         ~server() override;
 
     private:
-#ifdef I_OS_WIN
-        WSADATA wsaData{};
-#endif
+
         std::shared_ptr<bool> hasListened;
 
         int rawAccept(socketor& socketBuf);
