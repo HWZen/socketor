@@ -1,4 +1,4 @@
-#include "sock_server.h"
+#include "server.h"
 #include <memory>
 
 #ifdef I_OS_LINUX
@@ -12,7 +12,7 @@ namespace mysock
         closesocket(s.getRawSocket());
     }
 
-    server::server(uint16_t Port)
+    Server::Server(uint16_t Port)
     {
 #ifdef I_OS_WIN
         wsa_mutex.lock();
@@ -31,7 +31,7 @@ namespace mysock
         hasListened = std::make_shared<bool>(false);
     }
 
-    int server::Listen()
+    int Server::Listen()
     {
         if (!hasListened)
             return EMPTY_OBJ;
@@ -53,7 +53,7 @@ namespace mysock
         return LISTEN_SUCESS;
     }
 
-    int server::Accept(void (* call_back)(socketor))
+    int Server::Accept(void (* call_back)(socketor))
     {
         socketor client;
         int err = rawAccept(client);
@@ -64,12 +64,12 @@ namespace mysock
 
     }
 
-    int server::Accept(socketor& client)
+    int Server::Accept(socketor& client)
     {
         return rawAccept(client);
     }
 
-    void server::close_server()
+    void Server::close_server()
     {
         if (hasListened && *hasListened == true)
         {
@@ -78,12 +78,12 @@ namespace mysock
         }
     }
 
-    void server::close_connect(socketor s)
+    void Server::close_connect(socketor s)
     {
         closesocket(s.getRawSocket());
     }
 
-    server::server(uint16_t Port) noexcept
+    Server::Server(uint16_t Port) noexcept
     {
         this->Socket = Port.Socket;
         Port.Socket = 0;
@@ -94,7 +94,7 @@ namespace mysock
         Port.hasListened = nullptr;
     }
 
-    server::~server()
+    Server::~Server()
     {
         if (hasListened.use_count() == 1 && *hasListened)
         {
@@ -108,7 +108,7 @@ namespace mysock
 
     }
 
-    int server::rawAccept(socketor& socketBuf)
+    int Server::rawAccept(socketor& socketBuf)
     {
         if (!hasListened)
             return EMPTY_OBJ;

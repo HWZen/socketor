@@ -2,8 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <sock_server.h>
-#include <sock_client.h>
+#include <server.h>
+#include <client.h>
 #include <QThread>
 
 namespace Ui {

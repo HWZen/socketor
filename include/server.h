@@ -11,16 +11,10 @@ namespace mysock
 {
 
     void Accept_call_back(socketor s);
-    class server : protected socketor
+    class Server : protected socketor
     {
     public:
-        explicit server(uint16_t Port = DEFAULT_PORT);
-
-
-
-        server(uint16_t Port) = default;
-
-        server(uint16_t Port) noexcept ;
+        explicit Server(uint16_t Port = DEFAULT_PORT);
 
 
         // ¿ªÆô¼àÌýº¯Êý
@@ -45,7 +39,7 @@ namespace mysock
         static void close_connect(socketor s);
 
 
-        ~server() override;
+        ~Server() override;
 
     private:
 

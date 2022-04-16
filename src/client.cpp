@@ -1,6 +1,6 @@
-#include "sock_client.h"
+#include "client.h"
 #ifdef I_OS_WIN
-#include <ws2tcpip.h>
+#include <WS2tcpip.h>
 #endif
 
 #ifdef I_OS_LINUX

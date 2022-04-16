@@ -6,7 +6,7 @@
 #define CHATDIALOG_SERVERTHREAD_H
 
 #include <QThread>
-#include <sock_server.h>
+#include <server.h>
 #include "ClientThread.h"
 
 class ServerThread : public QThread
