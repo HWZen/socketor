@@ -49,7 +49,7 @@ namespace mysock
         char buf[MAX_SOCKET_SIZE];
         auto ret = recv(Socket, buf, MAX_SOCKET_SIZE, 0);
         if (ret <= 0)
-            return "lose connect";
+            return {};
         buf[ret] = '\0';
         return buf;
     }
