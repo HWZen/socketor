@@ -14,21 +14,14 @@ namespace mysock
 
     Server::Server(uint16_t Port)
     {
-#ifdef I_OS_WIN
-        wsa_mutex.lock();
-        if(wsaStartupCount == 0)
-        {
-            WSAStartup(0x0202, &wsaData);
-        }
-        ++wsaStartupCount;
-        wsa_mutex.unlock();
-#endif
+
         Socket_info.sin_family = AF_INET;
         Socket_info.sin_port = htons(Port);
         Socket_info.sin_addr.s_addr = htonl(INADDR_ANY);
         Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        socketor::Port = Port;
 
-        hasListened = std::make_shared<bool>(false);
+        hasListened = std::make_shared<std::atomic_bool>(false);
     }
 
     int Server::Listen()
@@ -37,6 +30,7 @@ namespace mysock
             return EMPTY_OBJ;
         if (*hasListened)
             return LISTEN_SUCESS;
+
 
 
         if (int err = bind(Socket, (struct sockaddr*)&Socket_info, sizeof(SOCKADDR_IN)); err == -1)
@@ -86,13 +80,9 @@ namespace mysock
         if (hasListened.use_count() == 1 && *hasListened)
         {
             closesocket(Socket);
+            *hasListened = false;
         }
-#ifdef I_OS_WIN
-        wsa_mutex.lock();
-        if (--wsaStartupCount == 0)
-            WSACleanup();
-        wsa_mutex.unlock();
-#endif
+
 
     }
 
@@ -132,6 +122,11 @@ namespace mysock
             return false;
         socketor::Port = Port;
         return true;
+    }
+
+    bool Server::isListen() const
+    {
+        return hasListened && *hasListened;
     }
 
 

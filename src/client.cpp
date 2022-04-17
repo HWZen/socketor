@@ -9,7 +9,7 @@ using IN_ADDR = in_addr;
 
 mysock::Client::Client(const char *_server_address, uint16_t port)
 {
-    hasConnected = std::make_shared<bool>(false);
+    hasConnected = std::make_shared<std::atomic_bool>(false);
     server_port = port;
     server_address = _server_address;
 
@@ -18,32 +18,6 @@ mysock::Client::Client(const char *_server_address, uint16_t port)
 [[nodiscard]]int mysock::Client::Connect2Server()
 {
 #ifdef I_OS_WIN
-
-    // Initialize Windows socket library
-    int err = 0;
-    wsa_mutex.lock();
-    if(wsaStartupCount == 0){
-        WORD wVersionRequested = 0;
-
-
-        wVersionRequested = MAKEWORD(2, 2);
-
-        err = WSAStartup(wVersionRequested, &wsaData);
-        if(err != 0){
-            wsa_mutex.unlock();
-            return WSA_ERROR;
-        }
-
-        if (LOBYTE(wsaData.wVersion) != 2 ||
-            HIBYTE(wsaData.wVersion) != 2)
-        {
-            WSACleanup();
-            wsa_mutex.unlock();
-            return BYTE_FAIL;
-        }
-        ++wsaStartupCount;
-    }
-    wsa_mutex.unlock();
 
 // DNS
 #ifdef _MSC_VER
@@ -66,7 +40,6 @@ mysock::Client::Client(const char *_server_address, uint16_t port)
 
     }
     else{
-        err = WSAGetLastError();
         return GET_HOST_NAME_FAIL;
     }
 #endif //_MSC_VER
@@ -100,34 +73,23 @@ mysock::Client::Client(const char *_server_address, uint16_t port)
     Socket_info = {PF_INET, htons(server_port), tmp};
     if(connect(Socket, (struct sockaddr *)&Socket_info, sizeof(SOCKADDR_IN))<0)
         return CONNECT_FAIL;
+    hasConnected->store(true);
     return SUCESS;
 }
 
 void mysock::Client::CloseConnect()
 {
-    if(!*hasConnected)
-    {
-        return;
-    }
-    else if(hasConnected.use_count() == 1 && *hasConnected)
+    if(hasConnected && *hasConnected)
     {
         closesocket(Socket);
-#ifdef I_OS_WIN
-        wsa_mutex.lock();
-        if(wsaStartupCount == 1)
-        {
-            WSACleanup();
-            --wsaStartupCount;
-        }
-        wsa_mutex.unlock();
-#endif
     }
 
 }
 
 mysock::Client::~Client()
 {
-    if(hasConnected.use_count() == 1){
+    if(hasConnected.use_count() == 1 && *hasConnected)
+    {
         CloseConnect();
     }
 }

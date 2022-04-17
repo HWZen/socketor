@@ -29,6 +29,8 @@ namespace mysock
         // 开启监听函数
         int Listen() noexcept(false);
 
+        bool isListen() const;
+
         // 受理连接并调用接收函数
         int Accept(void(* call_back)(socketor));
 
@@ -52,11 +54,10 @@ namespace mysock
 
     private:
 
-        std::shared_ptr<bool> hasListened;
+        std::shared_ptr<std::atomic_bool> hasListened;
 
         int rawAccept(socketor& socketBuf);
 
-        uint16_t port;
 
     public:
         static const uint16_t DEFAULT_PORT = 5150;

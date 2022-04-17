@@ -10,7 +10,7 @@ namespace mysock
     class Client : public socketor
     {
     public:
-        explicit Client(const char *server_address = SERVER_ADDRESS, uint16_t port = DEFAULT_PORT);
+        explicit Client(const char *server_address = DEFAULT_SERVER, uint16_t port = DEFAULT_PORT);
 
         /**
          * @brief Set server port
@@ -52,19 +52,16 @@ namespace mysock
         ~Client() override;
 
     private:
-#ifdef I_OS_WIN
-        WSADATA wsaData{};
-#endif
         // 服务器真实地址
         std::string server_address;
 
         uint16_t server_port;
 
-        std::shared_ptr<bool> hasConnected;
+        std::shared_ptr<std::atomic_bool> hasConnected;
 
     public:
-        //定义程序中使用的常
-        constexpr static char const * const SERVER_ADDRESS = "127.0.0.1"; //服务器端IP地址
+        //定义程序中使用的常量
+        constexpr static char const * const DEFAULT_SERVER = "127.0.0.1"; //服务器端IP地址
         static const uint16_t DEFAULT_PORT = 5150;
     };
 } // namespace mysock

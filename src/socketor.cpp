@@ -17,10 +17,43 @@ void Sleep(int ms)
     select(0, NULL, NULL, NULL, &delay);
 }
 
-#endif
+#endif // I_OS_LINUX
+
+#ifdef I_OS_WIN
+
+#include <stdexcept>
+
+#endif // I_OS_WIN
 
 namespace mysock
 {
+    socketor::socketor()
+    {
+#ifdef I_OS_WIN
+        int err = 0;
+        ++init_count;
+        if (init_count == 1)
+        {
+            WORD wVersionRequested = 0;
+
+            wVersionRequested = MAKEWORD(2, 2);
+
+            err = WSAStartup(wVersionRequested, &wsaData);
+            if(err != 0){
+                throw std::runtime_error("WSAStartup failed");
+            }
+
+            if (LOBYTE(wsaData.wVersion) != 2 ||
+                HIBYTE(wsaData.wVersion) != 2)
+            {
+                WSACleanup();
+                throw std::runtime_error("byte alignment failed");
+            }
+        }
+#endif // I_OS_WIN
+
+    }
+
     socketor::socketor(SOCKET target_socket, SOCKADDR_IN socket_info)
     {
         Socket = target_socket;
@@ -54,6 +87,14 @@ namespace mysock
         return buf;
     }
 
+    socketor::~socketor()
+    {
+#ifdef I_OS_WIN
+        --init_count;
+        if (init_count == 0)
+            WSACleanup();
+#endif // I_OS_WIN
+    }
 
 } // namespace mysock
 

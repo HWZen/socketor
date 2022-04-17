@@ -14,9 +14,11 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-#include <mutex>
+#include <atomic>
 
-#endif
+
+
+#endif // I_OS_WIN
 
 #define MAX_SOCKET_SIZE 0x10000
 
@@ -83,11 +85,12 @@ namespace mysock
 
         SOCKET Socket{};
     public:
-        socketor() = default;
+        socketor();
 
         socketor(SOCKET target_socket, SOCKADDR_IN socket_info);
 
-        virtual ~socketor() = default;
+        virtual ~socketor();
+
 
         // ·¢ËÍº¯Êý
         virtual void Send(const void* str, size_t len) const;
@@ -151,11 +154,12 @@ namespace mysock
     protected:
 #ifdef I_OS_WIN
 
-        static inline WSADATA wsaData{};
-        static inline std::mutex wsa_mutex{};
-        static inline int wsaStartupCount{};
+        static inline std::atomic_uint init_count{0};
 
-#endif
+        static inline WSADATA wsaData;
+
+#endif // I_OS_WIN
+
     };
 
     template<typename Ty>
@@ -177,6 +181,7 @@ namespace mysock
         explicit exception(Ty date) : error_date(date), std::exception(){}
 
         exception(Ty date, const char* describe) : error_date(date), std::exception(describe){}
+
 
     };
 
