@@ -45,16 +45,27 @@ typedef struct sockaddr_in SOCKADDR_IN;
 
 #ifdef __GNUC__
 
-namespace std{
+namespace std
+{
     class msvc_exception
     {
     protected:
         string describe;
     public:
-        msvc_exception(string str):describe(str){}
-        msvc_exception():describe("no describe"){}
-        virtual const char* what(){return describe.c_str();}
+        msvc_exception(string str) : describe(str)
+        {
+        }
+
+        msvc_exception() : describe("no describe")
+        {
+        }
+
+        virtual const char* what()
+        {
+            return describe.c_str();
+        }
     };
+
 #define exception msvc_exception
 }
 
@@ -143,9 +154,9 @@ namespace mysock
         {
 #ifdef I_OS_LINUX
             struct timeval tv;
-        tv.tv_sec = timeout / 1000;
-        tv.tv_usec = (timeout % 1000) * 1000;
-        return setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(struct timeval));
+            tv.tv_sec = timeout / 1000;
+            tv.tv_usec = (timeout % 1000) * 1000;
+            return setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&tv, sizeof(struct timeval));
 #endif // I_OS_LINUX
 
 #ifdef I_OS_WIN
@@ -159,9 +170,9 @@ namespace mysock
         {
 #ifdef I_OS_LINUX
             struct timeval tv;
-        tv.tv_sec = timeout / 1000;
-        tv.tv_usec = (timeout % 1000) * 1000;
-        return setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&tv, sizeof(struct timeval));
+            tv.tv_sec = timeout / 1000;
+            tv.tv_usec = (timeout % 1000) * 1000;
+            return setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (char*)&tv, sizeof(struct timeval));
 #endif // I_OS_LINUX
 
 #ifdef I_OS_WIN
@@ -179,7 +190,7 @@ namespace mysock
             return Socket;
         }
 
-      protected:
+    protected:
         // windows platform, wsa count
 #ifdef I_OS_WIN
 
@@ -208,13 +219,16 @@ namespace mysock
             return exception::what();
         }
 
-        explicit exception(Ty date) : error_date(date), std::exception(){}
+        explicit exception(Ty date) : error_date(date), std::exception()
+        {
+        }
 
-        exception(Ty date, const char* describe) : error_date(date), std::exception(describe){}
+        exception(Ty date, const char* describe) : error_date(date), std::exception(describe)
+        {
+        }
 
 
     };
-
 
 
 } // namespace mysock

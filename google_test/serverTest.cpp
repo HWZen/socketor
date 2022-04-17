@@ -3,6 +3,7 @@
 //
 #include "gtest/gtest.h"
 #include "server.h"
+#include "osplatformutil.h"
 
 class ServerTest : public ::testing::Test {
 protected:
@@ -47,9 +48,11 @@ TEST(serverConstruct, parm) {
 TEST_F(ServerTest, serverListen) {
     bool listenStatus = server->Listen() == mysock::SUCESS ? true : false;
     EXPECT_EQ(listenStatus, true);
+#ifdef I_OS_WIN
     if(!listenStatus) {
         std::cerr << WSAGetLastError() << std::endl;
     }
+#endif // I_OS_WIN
     EXPECT_EQ(server->isListen(), listenStatus);
     if(listenStatus) {
         server->CloseServer();

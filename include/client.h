@@ -2,7 +2,7 @@
 #include "socketor.h"
 #include <string>
 #include <memory>
-
+#include <atomic>
 
 
 namespace mysock
@@ -78,7 +78,7 @@ namespace mysock
 
     public:
         // const static member
-        constexpr static char const * const DEFAULT_SERVER = "127.0.0.1";
-        static const uint16_t DEFAULT_PORT = 5150;
+        constexpr static inline char const * const DEFAULT_SERVER = "127.0.0.1";
+        static inline const uint16_t DEFAULT_PORT = 5150;
     };
 } // namespace mysock

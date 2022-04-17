@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <memory>
 #include <functional>
+#include <atomic>
 
 
 namespace mysock
@@ -98,7 +99,7 @@ namespace mysock
 
     public:
         // const static member
-        static const uint16_t DEFAULT_PORT = 5150;
+        static inline uint16_t DEFAULT_PORT = 5150;
 
     };
 } // namespace mysock
