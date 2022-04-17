@@ -13,7 +13,7 @@ namespace mysock
         explicit Client(const char *server_address = SERVER_ADDRESS, int port = DEFAULT_PORT);
 
         // 连接至服务器
-        [[nodiscard]]int connect2server();
+        [[nodiscard]]int Connect2Server();
 
         void Send(const std::string &str) const override
         {
@@ -26,7 +26,7 @@ namespace mysock
             socketor::Send(str, len);
         }
 
-        void close_connect();
+        void CloseConnect();
 
         ~Client() override;
 

@@ -15,7 +15,7 @@ mysock::Client::Client(const char *_server_address, int port)
 
 }
 
-[[nodiscard]]int mysock::Client::connect2server()
+[[nodiscard]]int mysock::Client::Connect2Server()
 {
 #ifdef I_OS_WIN
 
@@ -105,7 +105,7 @@ mysock::Client::Client(const char *_server_address, int port)
     return SUCESS;
 }
 
-void mysock::Client::close_connect()
+void mysock::Client::CloseConnect()
 {
     if(!*hasConnected)
     {
@@ -130,7 +130,7 @@ void mysock::Client::close_connect()
 mysock::Client::~Client()
 {
     if(hasConnected.use_count() == 1){
-        close_connect();
+        CloseConnect();
     }
 }
 

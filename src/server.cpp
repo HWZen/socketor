@@ -69,7 +69,7 @@ namespace mysock
         return rawAccept(client);
     }
 
-    void Server::close_server()
+    void Server::CloseServer()
     {
         if (hasListened && *hasListened == true)
         {
@@ -78,7 +78,7 @@ namespace mysock
         }
     }
 
-    void Server::close_connect(socketor s)
+    void Server::CloseConnect(socketor s)
     {
         closesocket(s.getRawSocket());
     }
