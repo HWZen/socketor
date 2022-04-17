@@ -7,10 +7,6 @@ void WSACleanup(){}
 
 namespace mysock
 {
-    void Accept_call_back(socketor s)
-    {
-        closesocket(s.getRawSocket());
-    }
 
     Server::Server(uint16_t Port)
     {

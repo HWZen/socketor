@@ -2,8 +2,8 @@
 // Created by HWZ on 2021/1/19.
 //
 
-#ifndef NBUT_BEST_SQL_SOCKETOR_H
-#define NBUT_BEST_SQL_SOCKETOR_H
+#ifndef SOCKETOR_H
+#define SOCKETOR_H
 
 #include <string>
 #include "osplatformutil.h"
@@ -92,30 +92,53 @@ namespace mysock
         virtual ~socketor();
 
 
-        // 发送函数
-        virtual void Send(const void* str, size_t len) const;
+        /**
+         * @brief Send data
+         * 
+         * @param dataBuf data buffer
+         * @param len data length
+         */
+        virtual void Send(const void* dataBuf, size_t len) const;
 
+        /**
+         * @brief Send string
+         * 
+         * @param str String
+         */
         virtual void Send(const std::string& str) const;
 
-        // 接收函数
+        /**
+         * @brief Receive data, block
+         * 
+         * @param buf Receive buffer
+         * @param len Receive length
+         * @return int64_t Receive length, -1 if error
+         *
+         */
         virtual int64_t receive(void* buf, size_t len) const;
 
+        /**
+         * @brief receive string, block
+         * 
+         * @return std::string, empty string if error
+         * 
+         */
         virtual std::string receive() const;
 
 
-        // Socket地址
+        // get socket address
         std::string address() const
         {
             return Address;
         };
 
-        // Socket端口
+        // get socket port
         uint16_t port() const
         {
             return Port;
         };
 
-        // 设置接收超时时间
+        // set receive timeout
         [[nodiscard("should be verified")]]auto setRecvTimeout(int timeout)
         {
 #ifdef I_OS_LINUX
@@ -131,7 +154,7 @@ namespace mysock
 
         }
 
-        // 设置发送超时时间
+        // set send timeout
         [[nodiscard("should be verified")]]auto setSendTimeout(int timeout)
         {
 #ifdef I_OS_LINUX
@@ -146,12 +169,18 @@ namespace mysock
 #endif // I_OS_WIN
         }
 
+        /**
+         * @brief Get the Raw Socket object
+         * 
+         * @return SOCKET
+         */
         SOCKET getRawSocket()
         {
             return Socket;
         }
 
-    protected:
+      protected:
+        // windows platform, wsa count
 #ifdef I_OS_WIN
 
         static inline std::atomic_uint init_count{0};
@@ -162,6 +191,7 @@ namespace mysock
 
     };
 
+    // TODO: Ready to deprecate
     template<typename Ty>
     class exception : public std::exception
     {
@@ -189,8 +219,4 @@ namespace mysock
 
 } // namespace mysock
 
-// SOCKET的封装
-
-
-
-#endif //NBUT_BEST_SQL_SOCKETOR_H
+#endif //SOCKETOR_H

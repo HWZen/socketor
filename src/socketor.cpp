@@ -64,9 +64,9 @@ namespace mysock
         Port = ntohs(socket_info.sin_port);
     }
 
-    void socketor::Send(const void *str, size_t len) const
+    void socketor::Send(const void *dataBuf, size_t len) const
     {
-        send(Socket, (char *)str, len, 0);
+        send(Socket, (char *)dataBuf, len, 0);
     }
     void socketor::Send(const std::string &str) const
     {

@@ -33,35 +33,52 @@ namespace mysock
         std::string getAddress() const;
 
 
-        // 连接至服务器
+        /**
+         * @brief Connect to server, if address is domain name, it will be resolved to @member server_address
+         * 
+         * @return int error code
+         */
         [[nodiscard]]int Connect2Server();
 
+        /**
+         * @brief Send data to server
+         * 
+         * @param str Send data
+         */
         void Send(const std::string &str) const override
         {
             socketor::Send(str);
         }
 
-
+        /**
+         * @brief Send data to server with traditional mode
+         *
+         * @param str
+         * @param len
+         */
         void rawSend(const void *str, size_t len)
         {
             socketor::Send(str, len);
         }
 
+        // close socket, if no connect
         void CloseConnect();
 
         ~Client() override;
 
     private:
-        // 服务器真实地址
+        // server real address
         std::string server_address;
 
+        // server port
         uint16_t server_port;
 
+        // connect flag, thread safe
         std::shared_ptr<std::atomic_bool> hasConnected;
 
     public:
-        //定义程序中使用的常量
-        constexpr static char const * const DEFAULT_SERVER = "127.0.0.1"; //服务器端IP地址
+        // const static member
+        constexpr static char const * const DEFAULT_SERVER = "127.0.0.1";
         static const uint16_t DEFAULT_PORT = 5150;
     };
 } // namespace mysock
