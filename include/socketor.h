@@ -79,7 +79,7 @@ namespace mysock
     protected:
         SOCKADDR_IN Socket_info{};
         std::string Address{};
-        int Port{};
+        uint16_t Port{};
 
         SOCKET Socket{};
     public:
@@ -107,7 +107,7 @@ namespace mysock
         };
 
         // Socket¶Ë¿Ú
-        int port() const
+        uint16_t port() const
         {
             return Port;
         };

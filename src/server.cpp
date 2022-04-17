@@ -121,6 +121,18 @@ namespace mysock
         return SUCESS;
     }
 
+    uint16_t Server::getPort() const
+    {
+        return socketor::Port;
+    }
+
+    bool Server::setPort(uint16_t Port)
+    {
+        if(hasListened && *hasListened)
+            return false;
+        socketor::Port = Port;
+        return true;
+    }
 
 
 }// namespace mysock

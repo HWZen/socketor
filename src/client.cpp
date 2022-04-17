@@ -7,7 +7,7 @@
 using IN_ADDR = in_addr;
 #endif
 
-mysock::Client::Client(const char *_server_address, int port)
+mysock::Client::Client(const char *_server_address, uint16_t port)
 {
     hasConnected = std::make_shared<bool>(false);
     server_port = port;
@@ -130,6 +130,33 @@ mysock::Client::~Client()
     if(hasConnected.use_count() == 1){
         CloseConnect();
     }
+}
+
+bool mysock::Client::setPort(uint16_t port)
+{
+    if(hasConnected && *hasConnected)
+        return false;
+    server_port = port;
+    return true;
+}
+
+bool mysock::Client::setAddress(const std::string& address)
+{
+    if(hasConnected && *hasConnected)
+        return false;
+    server_address = address;
+    Address = address;
+    return true;
+}
+
+uint16_t mysock::Client::getPort() const
+{
+    return server_port;
+}
+
+std::string mysock::Client::getAddress() const
+{
+    return server_address;
 }
 
 

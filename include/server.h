@@ -16,6 +16,15 @@ namespace mysock
     public:
         explicit Server(uint16_t Port = DEFAULT_PORT);
 
+        /**
+         * @brief Set listen port
+         * @param port listen port
+         * @return true if success, otherwise server has been listened
+         * */
+        bool setPort(uint16_t Port);
+
+        // get listen port
+        uint16_t getPort() const;
 
         // ¿ªÆô¼àÌýº¯Êý
         int Listen() noexcept(false);
@@ -47,8 +56,10 @@ namespace mysock
 
         int rawAccept(socketor& socketBuf);
 
+        uint16_t port;
+
     public:
-        static const int DEFAULT_PORT = 5150;
+        static const uint16_t DEFAULT_PORT = 5150;
 
     };
 } // namespace mysock
