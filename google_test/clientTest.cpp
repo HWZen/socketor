@@ -3,29 +3,86 @@
 //
 #include "gtest/gtest.h"
 #include "client.h"
+#include "server.h"
 
-class sock_clientTest : public ::testing::Test {
+class ClientTest : public ::testing::Test {
 protected:
-    sock_clientTest() {
-        // You can do set-up work for each test here.
+    mysock::Client *client;
+    mysock::Server *server;
+    ClientTest() {
+        server = new mysock::Server{5150};
+        if(server->Listen() != mysock::LISTEN_SUCESS)
+            throw std::runtime_error("server listen error");
     }
 
-    ~sock_clientTest() override {
-        // You can do clean-up work that doesn't throw exceptions here.
+    ~ClientTest() override {
+        delete server;
     }
 
     // If the constructor and destructor are not enough for setting up
     // and cleaning up each test, you can define the following methods:
 
     void SetUp() override {
-        // Code here will be called immediately after the constructor (right
-        // before each test).
+        client = new mysock::Client{"127.0.0.1",5150};
     }
 
     void TearDown() override {
-        // Code here will be called immediately after each test (right
-        // before the destructor).
+        delete client;
     }
 
     // Objects declared here can be used by all tests in the test case for Foo.
 };
+
+TEST(clientConstrcutor, default)
+{
+    mysock::Client client;
+    EXPECT_EQ(client.getPort(), mysock::Client::DEFAULT_PORT);
+    EXPECT_EQ(client.getAddress(), mysock::Client::DEFAULT_SERVER);
+}
+
+TEST(clientConstrcutor, param)
+{
+    mysock::Client client{"192.168.0.1",1234};
+    EXPECT_EQ(client.getPort(), 1234);
+    EXPECT_EQ(client.getAddress(), "192.168.0.1");
+}
+
+TEST_F(ClientTest, DNS)
+{
+    EXPECT_TRUE(client->setPort(443));
+    client->setAddress("baidu.com");
+    EXPECT_EQ(client->getAddress(), "baidu.com");
+    auto err = client->Connect2Server();
+    EXPECT_NE(err, mysock::GET_HOST_NAME_FAIL);
+    EXPECT_NE(client->getAddress(), "baidu.com");
+}
+
+TEST_F(ClientTest, Connect)
+{
+    auto err = client->Connect2Server();
+    EXPECT_EQ(err, mysock::SUCESS);
+}
+
+TEST_F(ClientTest, SetParm)
+{
+    client->setPort(1234);
+    EXPECT_EQ(client->getPort(), 1234);
+    client->setAddress("192.168.0.1");
+    EXPECT_EQ(client->getAddress(), "192.168.0.1");
+    auto err = client->Connect2Server();
+    EXPECT_EQ(err, mysock::CONNECT_FAIL);
+}
+
+TEST_F(ClientTest, SetParmSafe)
+{
+    auto err = client->Connect2Server();
+    EXPECT_EQ(err, mysock::SUCESS);
+    err = client->setPort(1234);
+    EXPECT_EQ(err, false);
+    EXPECT_NE(client->getPort(), 1234);
+
+    err = client->setAddress("192.168.0.1");
+    EXPECT_EQ(err, false);
+    EXPECT_NE(client->getAddress(), "192.168.0.1");
+}
+

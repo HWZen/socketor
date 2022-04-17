@@ -4,14 +4,14 @@
 #include "gtest/gtest.h"
 #include "server.h"
 
-class sock_serverTest : public ::testing::Test {
+class ServerTest : public ::testing::Test {
 protected:
     mysock::Server *server;
-    sock_serverTest() {
+    ServerTest() {
         server = new mysock::Server{};
     }
 
-    ~sock_serverTest() override {
+    ~ServerTest() override {
         delete server;
     }
 
@@ -35,9 +35,42 @@ protected:
 TEST(serverConstruct, Default) {
     mysock::Server server{};
     EXPECT_EQ(server.getPort(), mysock::Server::DEFAULT_PORT);
+    EXPECT_EQ(server.isListen(), false);
 }
 
 TEST(serverConstruct, parm) {
     mysock::Server server{1234};
     EXPECT_EQ(server.getPort(), 1234);
+    EXPECT_EQ(server.isListen(), false);
 }
+
+TEST_F(ServerTest, serverListen) {
+    bool listenStatus = server->Listen() == mysock::SUCESS ? true : false;
+    EXPECT_EQ(listenStatus, true);
+    if(!listenStatus) {
+        std::cerr << WSAGetLastError() << std::endl;
+    }
+    EXPECT_EQ(server->isListen(), listenStatus);
+    if(listenStatus) {
+        server->CloseServer();
+        EXPECT_EQ(server->isListen(), false);
+    }
+}
+
+TEST(serverCopy, Default) {
+    mysock::Server server;
+    mysock::Server server2{server};
+    EXPECT_EQ(server.getPort(), server2.getPort());
+    EXPECT_EQ(server.isListen(), server2.isListen());
+
+    bool listenStatus = server.Listen() == mysock::SUCESS ? true : false;
+    EXPECT_EQ(listenStatus, server.isListen());
+    EXPECT_EQ(listenStatus, server2.isListen());
+
+    if(listenStatus) {
+        server.CloseServer();
+        EXPECT_EQ(server.isListen(), false);
+        EXPECT_EQ(server2.isListen(), false);
+    }
+}
+
