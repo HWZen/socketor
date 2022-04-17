@@ -43,9 +43,7 @@ mysock::Client::Client(const char *_server_address, int port)
         }
         ++wsaStartupCount;
     }
-
-
-
+    wsa_mutex.unlock();
 
 // DNS
 #ifdef _MSC_VER

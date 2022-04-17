@@ -41,12 +41,10 @@ namespace mysock
 
         if (int err = bind(Socket, (struct sockaddr*)&Socket_info, sizeof(SOCKADDR_IN)); err == -1)
         {
-            WSACleanup();
             return BIND_FAIL;
         }
         if (listen(Socket, 20) == -1)
         {
-            WSACleanup();
             return LISTEN_FAIL;
         }
         *hasListened = true;
@@ -83,28 +81,18 @@ namespace mysock
         closesocket(s.getRawSocket());
     }
 
-    Server::Server(uint16_t Port) noexcept
-    {
-        this->Socket = Port.Socket;
-        Port.Socket = 0;
-        this->Socket_info = Port.Socket_info;
-        Port.Socket_info = SOCKADDR_IN{};
-
-        this->hasListened = Port.hasListened;
-        Port.hasListened = nullptr;
-    }
-
     Server::~Server()
     {
         if (hasListened.use_count() == 1 && *hasListened)
         {
             closesocket(Socket);
-#ifdef I_OS_WIN
-            wsa_mutex.lock();
-            if (--wsaStartupCount == 0)
-                WSACleanup();
-#endif
         }
+#ifdef I_OS_WIN
+        wsa_mutex.lock();
+        if (--wsaStartupCount == 0)
+            WSACleanup();
+        wsa_mutex.unlock();
+#endif
 
     }
 
