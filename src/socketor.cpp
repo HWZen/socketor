@@ -3,6 +3,7 @@
 //
 
 #include "socketor.h"
+#include <stdexcept>
 #include <cstring>
 
 #ifdef I_OS_LINUX
@@ -29,28 +30,14 @@ namespace mysock
 {
     socketor::socketor()
     {
-#ifdef I_OS_WIN
+#ifdef I_OS_WIN // wsaStartup
         int err = 0;
         ++init_count;
         if (init_count == 1)
-        {
-            WORD wVersionRequested = 0;
-
-            wVersionRequested = MAKEWORD(2, 2);
-
-            err = WSAStartup(wVersionRequested, &wsaData);
-            if(err != 0){
-                throw std::runtime_error("WSAStartup failed");
-            }
-
-            if (LOBYTE(wsaData.wVersion) != 2 ||
-                HIBYTE(wsaData.wVersion) != 2)
-            {
-                WSACleanup();
-                throw std::runtime_error("byte alignment failed");
-            }
-        }
+            WSASTARTUP();
 #endif // I_OS_WIN
+
+        hasConnected = std::make_shared<std::atomic_bool>(false);
 
     }
 
@@ -62,6 +49,55 @@ namespace mysock
         Socket_info.sin_addr = socket_info.sin_addr;
         Address = inet_ntoa(socket_info.sin_addr);
         Port = ntohs(socket_info.sin_port);
+        hasConnected = std::make_shared<std::atomic_bool>(false);
+    }
+
+
+    socketor::~socketor()
+    {
+#ifdef I_OS_WIN
+        --init_count;
+        if (init_count == 0)
+            WSACLEANUP();
+#endif // I_OS_WIN
+    }
+
+    socketor::socketor(const socketor& other)
+    {
+        Address = other.Address;
+        Port = other.Port;
+        Socket = other.Socket;
+        Socket_info = other.Socket_info;
+        hasConnected = other.hasConnected;
+#ifdef I_OS_WIN
+        ++init_count;
+#endif // I_OS_WIN
+    }
+
+    socketor::socketor(socketor&& other) noexcept
+    {
+        Address = other.Address;
+        Port = other.Port;
+        Socket = other.Socket;
+        Socket_info = other.Socket_info;
+        hasConnected = other.hasConnected;
+#ifdef I_OS_WIN
+        ++init_count;
+#endif // I_OS_WIN
+    }
+
+    socketor& socketor::operator=(const socketor& other)
+    {
+        if(this == &other)
+            return *this;
+        if(hasConnected)
+            throw std::runtime_error("try to assign a socket that has connected");
+        Address = other.Address;
+        Port = other.Port;
+        Socket = other.Socket;
+        Socket_info = other.Socket_info;
+        hasConnected = other.hasConnected;
+        return *this;
     }
 
     void socketor::Send(const void *dataBuf, size_t len) const
@@ -87,14 +123,32 @@ namespace mysock
         return buf;
     }
 
-    socketor::~socketor()
-    {
 #ifdef I_OS_WIN
-        --init_count;
-        if (init_count == 0)
-            WSACleanup();
-#endif // I_OS_WIN
+    void socketor::WSACLEANUP()
+    {
+        WSACleanup();
     }
+
+    void socketor::WSASTARTUP()
+    {
+        WORD wVersionRequested = 0;
+
+        wVersionRequested = MAKEWORD(2, 2);
+
+        auto err = WSAStartup(wVersionRequested, &wsaData);
+        if(err != 0){
+            throw std::runtime_error("WSAStartup failed");
+        }
+
+        if (LOBYTE(wsaData.wVersion) != 2 ||
+            HIBYTE(wsaData.wVersion) != 2)
+        {
+            WSACleanup();
+            throw std::runtime_error("byte alignment failed");
+        }
+    }
+#endif // I_OS_WIN
+
 
 } // namespace mysock
 

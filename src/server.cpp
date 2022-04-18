@@ -16,8 +16,6 @@ namespace mysock
         Socket_info.sin_addr.s_addr = htonl(INADDR_ANY);
         Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         socketor::Port = Port;
-
-        hasListened = std::make_shared<std::atomic_bool>(false);
     }
 
     int Server::Listen()

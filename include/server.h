@@ -92,7 +92,8 @@ namespace mysock
 
     private:
 
-        std::shared_ptr<std::atomic_bool> hasListened;
+        // socketor::hasConnected 's reference
+        std::shared_ptr<std::atomic_bool> &hasListened{socketor::hasConnected};
 
         int rawAccept(socketor& socketBuf);
 

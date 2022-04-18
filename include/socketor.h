@@ -6,17 +6,14 @@
 #define SOCKETOR_H
 
 #include <string>
+#include <memory>
+#include <atomic>
 #include "osplatformutil.h"
 
 #ifdef I_OS_WIN
 
 #include <WinSock2.h>
-
 #pragma comment(lib, "ws2_32.lib")
-
-#include <atomic>
-
-
 
 #endif // I_OS_WIN
 
@@ -50,9 +47,9 @@ namespace std
     class msvc_exception
     {
     protected:
-        string describe;
+        const string describe;
     public:
-        msvc_exception(string str) : describe(str)
+        msvc_exception(string str) : describe(std::move(str))
         {
         }
 
@@ -60,7 +57,7 @@ namespace std
         {
         }
 
-        virtual const char* what()
+        virtual const char* what() const
         {
             return describe.c_str();
         }
@@ -95,8 +92,20 @@ namespace mysock
         uint16_t Port{};
 
         SOCKET Socket{};
+
+        // connect flag, thread safe
+        std::shared_ptr<std::atomic_bool> hasConnected;
     public:
         socketor();
+
+        // copy constructor
+        socketor(const socketor&);
+
+        // move constructor
+        socketor(socketor&&) noexcept;
+
+        // copy assignment
+        socketor& operator=(const socketor&);
 
         socketor(SOCKET target_socket, SOCKADDR_IN socket_info);
 
@@ -197,6 +206,10 @@ namespace mysock
         static inline std::atomic_uint init_count{0};
 
         static inline WSADATA wsaData;
+
+        static void WSASTARTUP();
+
+        static void WSACLEANUP();
 
 #endif // I_OS_WIN
 

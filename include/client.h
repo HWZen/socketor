@@ -73,8 +73,7 @@ namespace mysock
         // server port
         uint16_t server_port;
 
-        // connect flag, thread safe
-        std::shared_ptr<std::atomic_bool> hasConnected;
+
 
     public:
         // const static member

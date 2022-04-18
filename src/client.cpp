@@ -9,7 +9,6 @@ using IN_ADDR = in_addr;
 
 mysock::Client::Client(const char *_server_address, uint16_t port)
 {
-    hasConnected = std::make_shared<std::atomic_bool>(false);
     server_port = port;
     server_address = _server_address;
 
@@ -83,7 +82,6 @@ void mysock::Client::CloseConnect()
     {
         closesocket(Socket);
     }
-
 }
 
 mysock::Client::~Client()
