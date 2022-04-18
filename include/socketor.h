@@ -215,33 +215,6 @@ namespace mysock
 
     };
 
-    // TODO: Ready to deprecate
-    template<typename Ty>
-    class exception : public std::exception
-    {
-    private:
-        Ty error_date;
-    public:
-        Ty date()
-        {
-            return error_date;
-        }
-
-        const char* describe()
-        {
-            return exception::what();
-        }
-
-        explicit exception(Ty date) : error_date(date), std::exception()
-        {
-        }
-
-        exception(Ty date, const char* describe) : error_date(date), std::exception(describe)
-        {
-        }
-
-
-    };
 
 
 } // namespace mysock
