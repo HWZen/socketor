@@ -11,11 +11,19 @@ protected:
     mysock::Server *server;
     ClientTest() {
         server = new mysock::Server{5150};
-        if(server->Listen() != mysock::LISTEN_SUCESS)
+        if(int err = server->Listen(); err != mysock::LISTEN_SUCESS)
+        {
+#ifdef I_OS_WIN
+            auto wsaErr = WSAGetLastError();
+            std::cerr << "Listen error: " << wsaErr << std::endl
+                << "Error message: " << err << std::endl;
+#endif // I_OS_WIN
             throw std::runtime_error("server listen error");
+        }
     }
 
     ~ClientTest() override {
+        server->CloseServer();
         delete server;
     }
 
@@ -53,8 +61,9 @@ TEST_F(ClientTest, DNS)
     client->setAddress("baidu.com");
     EXPECT_EQ(client->getAddress(), "baidu.com");
     auto err = client->Connect2Server();
-    EXPECT_NE(err, mysock::GET_HOST_NAME_FAIL);
+    EXPECT_EQ(err, mysock::SUCESS);
     EXPECT_NE(client->getAddress(), "baidu.com");
+    client->CloseConnect();
 }
 
 TEST_F(ClientTest, Connect)
@@ -69,8 +78,6 @@ TEST_F(ClientTest, SetParm)
     EXPECT_EQ(client->getPort(), 1234);
     client->setAddress("192.168.0.1");
     EXPECT_EQ(client->getAddress(), "192.168.0.1");
-    auto err = client->Connect2Server();
-    EXPECT_EQ(err, mysock::CONNECT_FAIL);
 }
 
 TEST_F(ClientTest, SetParmSafe)

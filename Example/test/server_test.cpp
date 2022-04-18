@@ -42,13 +42,13 @@ void foo(mysock::socketor client);
 
 int main()
 {
-    mysock::server Server(5150);
+    mysock::Server server(5150);
     try
     {
-        if(int err = Server.Listen(); err != mysock::SUCESS)
+        if(int err = server.Listen(); err != mysock::SUCESS)
             throw mysock::exception<mysock::flag>(mysock::flag(err), "Listen fail");
         println("Listening");
-        Server.Accept(foo);
+        server.Accept(foo);
         println("waiting for accept");
     }
     catch (mysock::exception<mysock::flag> &e)
