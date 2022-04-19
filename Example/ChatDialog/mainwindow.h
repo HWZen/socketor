@@ -27,7 +27,7 @@ public:
 private:
     Ui::MainWindow *ui;
 
-    mysock::server* server{nullptr};
+    mysock::Server* server{nullptr};
 
 public:
 signals:

@@ -15,7 +15,7 @@ Q_OBJECT
 
 public:
 
-    explicit ServerThread(mysock::server* server, QObject* parent = nullptr) : QThread(parent), m_server(server)
+    explicit ServerThread(mysock::Server* server, QObject* parent = nullptr) : QThread(parent), m_server(server)
     {
     }
 
@@ -26,7 +26,7 @@ public:
     void stop();
 
 private:
-    mysock::server* m_server;
+    mysock::Server* m_server;
 
     QList<ClientThread*> m_clientThreads;
 
