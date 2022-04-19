@@ -90,7 +90,7 @@ namespace mysock
     {
         if(this == &other)
             return *this;
-        if(hasConnected)
+        if(hasConnected->load())
             throw std::runtime_error("try to assign a socket that has connected");
         Address = other.Address;
         Port = other.Port;
