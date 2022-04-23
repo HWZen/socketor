@@ -54,10 +54,6 @@ TEST_F(ServerTest, serverListen) {
     }
 #endif // I_OS_WIN
     EXPECT_EQ(server->isListen(), listenStatus);
-    if(listenStatus) {
-        server->CloseServer();
-        EXPECT_EQ(server->isListen(), false);
-    }
 }
 
 TEST(serverCopy, Default) {
@@ -69,11 +65,5 @@ TEST(serverCopy, Default) {
     bool listenStatus = server.Listen() == mysock::SUCESS ? true : false;
     EXPECT_EQ(listenStatus, server.isListen());
     EXPECT_EQ(listenStatus, server2.isListen());
-
-    if(listenStatus) {
-        server.CloseServer();
-        EXPECT_EQ(server.isListen(), false);
-        EXPECT_EQ(server2.isListen(), false);
-    }
 }
 

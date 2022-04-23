@@ -23,7 +23,6 @@ protected:
     }
 
     ~ClientTest() override {
-        server->CloseServer();
         delete server;
     }
 

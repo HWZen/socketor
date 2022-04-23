@@ -14,7 +14,6 @@ namespace mysock
         Socket_info.sin_family = AF_INET;
         Socket_info.sin_port = htons(Port);
         Socket_info.sin_addr.s_addr = htonl(INADDR_ANY);
-        Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         socketor::Port = Port;
     }
 
@@ -26,7 +25,7 @@ namespace mysock
             return LISTEN_SUCESS;
 
 
-
+        Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (int err = bind(Socket, (struct sockaddr*)&Socket_info, sizeof(SOCKADDR_IN)); err == -1)
         {
             return BIND_FAIL;
@@ -53,15 +52,6 @@ namespace mysock
     int Server::Accept(socketor& client)
     {
         return rawAccept(client);
-    }
-
-    void Server::CloseServer()
-    {
-        if (hasListened && *hasListened == true)
-        {
-            closesocket(Socket);
-            *hasListened = false;
-        }
     }
 
     void Server::CloseConnect(socketor s)

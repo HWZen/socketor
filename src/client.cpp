@@ -70,7 +70,7 @@ mysock::Client::Client(const char *_server_address, uint16_t port)
     Address = server_address;
     Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     Socket_info = {PF_INET, htons(server_port), tmp};
-    if(connect(Socket, (struct sockaddr *)&Socket_info, sizeof(SOCKADDR_IN))<0)
+    if(connect(Socket, (struct sockaddr *)&Socket_info, sizeof(SOCKADDR_IN)) < 0)
         return CONNECT_FAIL;
     hasConnected->store(true);
     return SUCESS;

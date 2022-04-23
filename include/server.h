@@ -73,11 +73,6 @@ namespace mysock
          */
         int Accept(socketor& client);
 
-        /**
-         * @brief Close listen, if no listen, do nothing
-         * 
-         */
-        void CloseServer();
 
         /**
          * @brief Close a connection
