@@ -31,5 +31,5 @@ find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 add_executable(${PROJECT_NAME} welcome.ui mainwindow.ui mainwindow.cpp welcome.cpp main.cpp ServerThread.cpp ClientThread.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})
-target_link_libraries(${PROJECT_NAME} ${SERVER_LIBRARY} ${CLIENT_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${SOCKETOR_LIBRARY})
 

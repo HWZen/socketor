@@ -13,7 +13,7 @@
 void foo(mysock::socketor c);
 int main()
 {
-    mysock::server s(5150);
+    mysock::Server s(5150);
     if (int err = s.Listen(); err != mysock::LISTEN_SUCESS)
     {
         perrln( "Listen fail: ", err);
@@ -21,8 +21,6 @@ int main()
     }
 
     s.Accept(foo);
-    s.close_server();
-
 }
 
 void foo(mysock::socketor c){

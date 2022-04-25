@@ -5,14 +5,13 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(include)
 
-add_library(sockclient STATIC src/client.cpp src/socketor.cpp src/sockstream.cpp)
+add_library(socketor STATIC src/client.cpp src/server.cpp src/socketor.cpp src/sockstream.cpp)
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 #target_link_libraries(sockclient -lwsock32)
 endif()
 
-add_library(sockserver STATIC src/server.cpp src/socketor.cpp src/sockstream.cpp)
-
 file(COPY include DESTINATION ./)
 file(COPY cmake/Findsocketor.cmake DESTINATION ./)
 
+option(GTEST "Enable Google Test" OFF)
 add_subdirectory(google_test)

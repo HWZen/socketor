@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(test)
+project(sockstreamExample)
 
 set(CMAKE_CXX_STANDARD 17)
 # please change it to you socketor build path
@@ -12,14 +12,6 @@ else()
     message("socketor no found")
 endif()
 
+add_executable(${PROJECT_NAME} ${PROJECT_NAME}.cpp)
 
-
-add_executable(servertest server_test.cpp)
-add_executable(clienttest client_test.cpp)
-
-
-target_link_libraries(servertest ${SERVER_LIBRARY})
-target_link_libraries(clienttest ${CLIENT_LIBRARY})
-
-
-
+target_link_libraries(${PROJECT_NAME} ${SOCKETOR_LIBRARY})

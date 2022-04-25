@@ -14,5 +14,4 @@ int main(){
         mysock::Server::CloseConnect(sock);
     });
 
-    server.CloseServer();
 }

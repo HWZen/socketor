@@ -19,7 +19,7 @@ The above command applies to Windows and Linux platforms
 
 ## use example
 
-You can look at [server_test.cpp](Example/test/server_test.cpp) and [client_test.cpp](Example/test/client_test.cpp)
+You can look at [server_test.cpp](Example/GetStart/server_test.cpp) and [client_test.cpp](Example/GetStart/client_test.cpp)
 
 ## feature
 * Cross platforms

@@ -18,5 +18,5 @@ add_executable(receiver receiver.cpp)
 add_executable(sender sender.cpp)
 
 
-target_link_libraries(receiver ${SERVER_LIBRARY})
-target_link_libraries(sender ${CLIENT_LIBRARY})
+target_link_libraries(receiver ${SOCKETOR_LIBRARY})
+target_link_libraries(sender ${SOCKETOR_LIBRARY})
