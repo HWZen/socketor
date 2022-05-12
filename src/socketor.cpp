@@ -147,6 +147,17 @@ namespace mysock
             throw std::runtime_error("byte alignment failed");
         }
     }
+
+    bool socketor::checkConnected() const
+    {
+        return hasConnected->load();
+    }
+
+    void socketor::setConnected(bool flag)
+    {
+        hasConnected->store(flag);
+    }
+
 #endif // I_OS_WIN
 
 

@@ -199,6 +199,21 @@ namespace mysock
             return Socket;
         }
 
+
+        /**
+         * @brief Get the Connected flag
+         *
+         * @return bool
+         */
+        [[nodiscard]] bool checkConnected() const;
+
+        /**
+         * @brief Set the Connected flag
+         *
+         * @param flag
+         */
+        void setConnected(bool flag);
+
     protected:
         // windows platform, wsa count
 #ifdef I_OS_WIN
@@ -213,7 +228,12 @@ namespace mysock
 
 #endif // I_OS_WIN
 
+
+
     };
+
+
+
 
 
 
