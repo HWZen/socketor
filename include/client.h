@@ -14,22 +14,31 @@ namespace mysock
 
         /**
          * @brief Set server port
+         *
          * @param port Server port
+         *
          * @return true if success, otherwise has connected to server
          **/
         bool setPort(uint16_t port);
 
         /**
          * @brief Set server address
+         *
          * @param address Server address
+         *
          * @return true if success, otherwise has connected to server
          **/
         bool setAddress(const std::string &address);
 
-        // get server port
+        /**
+         *
+         * @return client port
+         */
         uint16_t getPort() const;
 
-        // get server address
+        /**
+         * @brief get server address
+         */
         std::string getAddress() const;
 
 
@@ -38,33 +47,49 @@ namespace mysock
          * 
          * @return int error code
          */
-        [[nodiscard]]int Connect2Server();
+        int Connect2Server();
 
         /**
          * @brief Send data to server
-         * 
+         *
          * @param str Send data
+         *
+         * @return sent len
+         * @retval 0 no connected
+         * @retval -1 sent fail
          */
-        void Send(const std::string &str) const override
+        int64_t Send(const std::string &str) const override
         {
-            socketor::Send(str);
+            if(hasConnected)
+                return socketor::Send(str);
+            return 0;
         }
 
         /**
-         * @brief Send data to server with traditional mode
+         * @brief Send data to server with classical type
          *
          * @param str
          * @param len
+         *
+         * @return sent len
+         * @retval 0 no connected
+         * @retval -1 sent fail
          */
-        void rawSend(const void *str, size_t len)
+        int64_t Send(const void *str, size_t len) const override
         {
-            socketor::Send(str, len);
+            if(hasConnected)
+                return socketor::Send(str, len);
+            return 0;
         }
 
-        // close socket, if no connect
+        /**
+         * @brief close socket, if no connect
+         */
         void CloseConnect();
 
         ~Client() override;
+
+        Client(const Client&) = delete;
 
     private:
         // server real address
@@ -73,7 +98,8 @@ namespace mysock
         // server port
         uint16_t server_port;
 
-
+        // server
+        bool hasConnected{false};
 
     public:
         // const static member

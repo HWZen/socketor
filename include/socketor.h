@@ -50,7 +50,8 @@ namespace mysock {
         LISTEN_FAIL,
         CONNECT_FAIL,
         EMPTY_OBJ,
-        NO_LISTENTED,
+        NO_LISTENED,
+        NO_CONNECTED,
         BYTE_FAIL,
         WSA_ERROR,
         GET_HOST_NAME_FAIL
@@ -71,7 +72,9 @@ namespace mysock {
 
         socketor(socketor &&) noexcept = default;
 
-        socketor &operator=(const socketor &);
+        socketor &operator=(const socketor &) = default;
+
+        socketor &operator=(socketor &&) noexcept = default;
 
         /**
          * @brief construct with sock fd
@@ -81,30 +84,37 @@ namespace mysock {
          */
         socketor(SOCKET socket_fd, SOCKADDR_IN socket_info);
 
-        virtual ~socketor();
+        virtual ~socketor() = default;
 
         /**
          * @brief Send data
          *
          * @param dataBuf data buffer
          * @param len data length
+         *
+         * @return sent len
+         * @retval -1 sent fail
          */
-        virtual void Send(const void *dataBuf, size_t len) const;
+        virtual int64_t Send(const void *dataBuf, size_t len) const;
 
         /**
          * @brief Send string
          * 
          * @param str String
+         *
+         * @return sent len
+         * @retval -1 sent fail
          */
-        virtual void Send(const std::string &str) const;
+        virtual int64_t Send(const std::string &str) const;
 
         /**
          * @brief Receive data, block
          * 
          * @param buf Receive buffer
          * @param len Receive length
-         * @return int64_t Receive length, -1 if error
          *
+         * @return int64_t Receive length
+         * @retval -1 received error
          */
         virtual int64_t receive(void *buf, size_t len) const;
 
@@ -131,7 +141,7 @@ namespace mysock {
          *
          * @return connect port
          */
-        uint16_t port() const {
+        constexpr uint16_t port() const {
             return Port;
         };
 
@@ -204,12 +214,13 @@ namespace mysock {
             WsaInitClass(const WsaInitClass &) = delete;
         };
 
-        void wsaInit() {
+        static void wsaInit() {
             WsaInitClass::WsaInit();
         }
-
 #endif // I_OS_WIN
     };
+
+
 
 
 } // namespace mysock

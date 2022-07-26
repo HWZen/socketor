@@ -39,27 +39,14 @@ namespace mysock
         Port = ntohs(socket_info.sin_port);
     }
 
-
-
-    socketor& socketor::operator=(const socketor& other)
+    int64_t socketor::Send(const void *dataBuf, size_t len) const
     {
-        if(this == &other)
-            return *this;
-        Address = other.Address;
-        Port = other.Port;
-        Socket = other.Socket;
-        Socket_info = other.Socket_info;
-        return *this;
+        return send(Socket, (char *)dataBuf, len, 0);
     }
 
-    void socketor::Send(const void *dataBuf, size_t len) const
+    int64_t socketor::Send(const std::string &str) const
     {
-        send(Socket, (char *)dataBuf, len, 0);
-    }
-
-    void socketor::Send(const std::string &str) const
-    {
-        send(Socket, str.c_str(), str.size(), 0);
+        return send(Socket, str.c_str(), str.size(), 0);
     }
 
     int64_t socketor::receive(void *buf, size_t len) const

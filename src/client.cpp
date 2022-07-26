@@ -17,7 +17,7 @@ mysock::Client::Client(const char *_server_address, uint16_t port)
 [[nodiscard]]int mysock::Client::Connect2Server()
 {
 #ifdef I_OS_WIN
-
+socketor::wsaInit();
 // DNS
 #ifdef _MSC_VER
     char **pptr = nullptr;
@@ -72,29 +72,27 @@ mysock::Client::Client(const char *_server_address, uint16_t port)
     Socket_info = {PF_INET, htons(server_port), tmp};
     if(connect(Socket, (struct sockaddr *)&Socket_info, sizeof(SOCKADDR_IN)) < 0)
         return CONNECT_FAIL;
-    hasConnected->store(true);
+    hasConnected = true;
     return SUCESS;
 }
 
 void mysock::Client::CloseConnect()
 {
-    if(hasConnected && *hasConnected)
+    if(hasConnected)
     {
         closesocket(Socket);
+        hasConnected = false;
     }
 }
 
 mysock::Client::~Client()
 {
-    if(hasConnected.use_count() == 1 && *hasConnected)
-    {
-        CloseConnect();
-    }
+    CloseConnect();
 }
 
 bool mysock::Client::setPort(uint16_t port)
 {
-    if(hasConnected && *hasConnected)
+    if(hasConnected)
         return false;
     server_port = port;
     return true;
@@ -102,7 +100,7 @@ bool mysock::Client::setPort(uint16_t port)
 
 bool mysock::Client::setAddress(const std::string& address)
 {
-    if(hasConnected && *hasConnected)
+    if(hasConnected)
         return false;
     server_address = address;
     Address = address;
