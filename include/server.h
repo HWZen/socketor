@@ -6,6 +6,7 @@
 #include <memory>
 #include <functional>
 #include <atomic>
+#include <optional>
 
 
 namespace mysock
@@ -15,6 +16,8 @@ namespace mysock
     {
     public:
         explicit Server(uint16_t Port = DEFAULT_PORT);
+
+        Server(Server &&) noexcept;
 
         /**
          * @brief Set listen port
@@ -54,18 +57,23 @@ namespace mysock
          */
         int closeListen();
 
-        class client : public socketor
+        class Client : public socketor
         {
+            friend Server;
         private:
-            uint16_t m_serverPort;
+            uint16_t m_serverPort{Server::DEFAULT_PORT};
 
             bool m_hasConnected{true};
         public:
             using socketor::socketor;
 
-            client& operator=(const client& other) = default;
+            Client(Client &&) noexcept = default;
 
-            client& operator=(client&& other) noexcept = default;
+            Client(const Client &) = default;
+
+            Client& operator=(const Client& other) = default;
+
+            Client& operator=(Client&& other) noexcept = default;
 
             void setServerPort(uint16_t port);
 
@@ -78,16 +86,20 @@ namespace mysock
             int closeConnect();
         };
 
-        int accept();
+        /**
+         * @brief accept a connection
+         * @return client socketor, or nullopt if fail.
+         */
+        Server::Client accept();
 
         ~Server() override;
 
         Server(const Server&) = delete;
 
     private:
-        bool hasListened{false};
+        bool m_hasListened{false};
 
-        int rawAccept(client &socketBuf);
+        int rawAccept(Client &socketBuf);
 
 
     public:

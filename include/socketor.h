@@ -33,10 +33,12 @@
 #include <fcntl.h>
 #include <sys/shm.h>
 
-typedef int SOCKET;
-typedef struct sockaddr_in SOCKADDR_IN;
+using SOCKET = int;
+using SOCKADDR_IN = struct sockaddr_in;
+
 #define closesocket(x) close(x)
 #define SOCKET_ERROR -1
+#define INVALID_SOCKET -1
 
 #define TRUE 1
 
@@ -54,7 +56,8 @@ namespace mysock {
         NO_CONNECTED,
         BYTE_FAIL,
         WSA_ERROR,
-        GET_HOST_NAME_FAIL
+        GET_HOST_NAME_FAIL,
+        ACCEPT_FAIL
     };
 
     class socketor {

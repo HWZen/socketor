@@ -32,7 +32,7 @@ namespace mysock
 
         /**
          *
-         * @return client port
+         * @return Client port
          */
         uint16_t getPort() const;
 
