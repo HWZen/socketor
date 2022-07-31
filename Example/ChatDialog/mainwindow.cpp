@@ -68,7 +68,7 @@ void MainWindow::tryToConnectToServer(const QString& host, const QString& name, 
 void MainWindow::tryToCreateServer(const QString& name, int port)
 {
     server = new mysock::Server(port);
-    if(server->Listen() != mysock::SUCESS){
+    if(server->listen() != mysock::SUCESS){
         emit connectFailed("Server connect failed");
         delete server;
         return;

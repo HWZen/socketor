@@ -14,5 +14,10 @@ file(COPY cmake/Findsocketor.cmake DESTINATION ./)
 
 option(GTEST "Enable Google Test" OFF)
 if(GTEST)
-add_subdirectory(google_test)
+    add_subdirectory(google_test)
+endif()
+
+option(EXAMPLE "Build examples" OFF)
+if(EXAMPLE)
+    add_subdirectory(Example)
 endif()

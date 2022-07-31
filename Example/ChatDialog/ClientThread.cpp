@@ -17,7 +17,6 @@ void ClientThread::run()
     while(true){
         QString str = QString::fromLocal8Bit(m_sock->receive().c_str());
         if (str.isEmpty())
-            break;
         {
             qDebug() << "lose connect: " << m_sock->address().c_str();
             break;

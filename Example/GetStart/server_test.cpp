@@ -6,12 +6,12 @@ using std::cin, std::cout, std::endl, std::string;
 
 int main(){
     mysock::Server server;
-    server.Listen();
-    server.Accept([](mysock::socketor sock){
-        cout << "accepted: " << sock.address() << endl;
-        string res = sock.receive();
-        cout << "received: " << res << endl;
-        mysock::Server::CloseConnect(sock);
-    });
+    server.listen();
+
+    auto client = server.accept();
+    cout << "accepted: " << client.address() << endl;
+    string res = client.receive();
+    cout << "received: " << res << endl;
+    client.closeConnect();
 
 }

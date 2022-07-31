@@ -82,8 +82,8 @@ try
     char* pfile = new char[f.fileSize];
     memcpy_s(pfile, f.fileSize, loader.data(), f.fileSize);
 
-    c.rawSend(&f, sizeof(f));
-    c.rawSend(pfile, f.fileSize);
+    c.Send(&f, sizeof(f));
+    c.Send(pfile, f.fileSize);
     println(fast_io::out(), "sended");
     c.receive();
     println(fast_io::out(), "recved");

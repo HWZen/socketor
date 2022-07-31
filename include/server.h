@@ -83,6 +83,10 @@ namespace mysock
 
             int64_t Send(const std::string &str) const override;
 
+            bool hasConnected(){
+                return m_hasConnected;
+            }
+
             int closeConnect();
         };
 
