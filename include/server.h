@@ -6,6 +6,7 @@
 #include <memory>
 #include <functional>
 #include <atomic>
+#include <optional>
 
 
 namespace mysock
@@ -16,81 +17,93 @@ namespace mysock
     public:
         explicit Server(uint16_t Port = DEFAULT_PORT);
 
+        Server(Server &&) noexcept;
+
         /**
          * @brief Set listen port
          * @param port listen port
          * @return true if success, otherwise server has been listened
          * */
-        bool setPort(uint16_t Port);
+        constexpr bool setPort(uint16_t Port);
 
-        // get listen port
-        uint16_t getPort() const;
+        /**
+         * @brief Get listen port
+         * @return uint16_t Listen port
+         */
+        constexpr uint16_t getPort() const{
+            return socketor::port();
+        }
 
         /**
          * @brief Start listen
          * 
          * @return int error code
          */
-        int Listen() noexcept(false);
+        int listen() noexcept(false);
 
-        // check if server has been listened
+        /**
+         * @brief Check if the service is listening
+         *
+         * @retval true Is listening
+         * @retval false Not listening
+         */
         bool isListen() const;
 
         /**
-         * @brief Accept a new connection
-         * 
-         * @param call_back Callback function
-         * @return int Error code
-         */
-        int Accept(void(* call_back)(socketor));
-
-        /**
-         * @brief
+         * @brief Close listening
          *
-         * @tparam Fn function type, class member function is also supported
-         * @tparam Args function arguments
-         * @param callBackFun Callback function, last argument must be
-         * mysock::socketor
-         * @param args function arguments, if Fn is class member
-         * function, the first argument is the class instance
-         * @return int Error code
+         * @return int error code
+         * @retval flag::NO_LISTENED server no listened
          */
-        template<typename Fn, typename ...Args>
-        int Accept(Fn &&callBackFun, Args&& ...args){
-            socketor client;
-            int err = rawAccept(client);
-            if (err != SUCESS)
-                return err;
-            std::invoke(callBackFun,args...,client);
-            return SUCESS;
-        }
+        int closeListen();
+
+        class Client : public socketor
+        {
+            friend Server;
+        private:
+            uint16_t m_serverPort{Server::DEFAULT_PORT};
+
+            bool m_hasConnected{true};
+        public:
+            using socketor::socketor;
+
+            Client(Client &&) noexcept = default;
+
+            Client(const Client &) = default;
+
+            Client& operator=(const Client& other) = default;
+
+            Client& operator=(Client&& other) noexcept = default;
+
+            void setServerPort(uint16_t port);
+
+            uint16_t getServerPort();
+
+            int64_t Send(const void *dataBuf, size_t len) const override;
+
+            int64_t Send(const std::string &str) const override;
+
+            bool hasConnected(){
+                return m_hasConnected;
+            }
+
+            int closeConnect();
+        };
 
         /**
-         * @brief Accept a new connection
-         * 
-         * @param client Client socket
-         * @return int Error code
+         * @brief accept a connection
+         * @return client socketor, or nullopt if fail.
          */
-        int Accept(socketor& client);
-
-
-        /**
-         * @brief Close a connection
-         * 
-         * @param s A socketor
-         *
-         */
-        static void CloseConnect(socketor s);
-
+        Server::Client accept();
 
         ~Server() override;
 
+        Server(const Server&) = delete;
+
     private:
+        bool m_hasListened{false};
 
-        // socketor::hasConnected 's reference
-        std::shared_ptr<std::atomic_bool> &hasListened{socketor::hasConnected};
-
-        int rawAccept(socketor& socketBuf);
+        int rawAccept(Client &socketBuf);
 
 
     public:

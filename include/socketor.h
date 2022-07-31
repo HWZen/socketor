@@ -8,11 +8,14 @@
 #include <string>
 #include <memory>
 #include <atomic>
+#include <stdexcept>
 #include "osplatformutil.h"
 
 #ifdef I_OS_WIN
 
 #include <WinSock2.h>
+
+
 #pragma comment(lib, "ws2_32.lib")
 
 #endif // I_OS_WIN
@@ -30,62 +33,34 @@
 #include <fcntl.h>
 #include <sys/shm.h>
 
-typedef int SOCKET;
-typedef struct sockaddr_in SOCKADDR_IN;
+using SOCKET = int;
+using SOCKADDR_IN = struct sockaddr_in;
+
 #define closesocket(x) close(x)
 #define SOCKET_ERROR -1
+#define INVALID_SOCKET -1
 
 #define TRUE 1
 
 #endif // I_OS_LINUX
 
-
-#ifdef __GNUC__
-
-namespace std
-{
-    class msvc_exception
-    {
-    protected:
-        const string describe;
-    public:
-        msvc_exception(string str) : describe(std::move(str))
-        {
-        }
-
-        msvc_exception() : describe("no describe")
-        {
-        }
-
-        virtual const char* what() const
-        {
-            return describe.c_str();
-        }
-    };
-
-#define exception msvc_exception
-}
-
-#endif
-
-namespace mysock
-{
-    enum flag
-    {
+namespace mysock {
+    enum flag {
         SUCESS,
         LISTEN_SUCESS = SUCESS,
         BIND_FAIL,
         LISTEN_FAIL,
         CONNECT_FAIL,
         EMPTY_OBJ,
-        NO_LISTENTED,
+        NO_LISTENED,
+        NO_CONNECTED,
         BYTE_FAIL,
         WSA_ERROR,
-        GET_HOST_NAME_FAIL
+        GET_HOST_NAME_FAIL,
+        ACCEPT_FAIL
     };
 
-    class socketor
-    {
+    class socketor {
     protected:
         SOCKADDR_IN Socket_info{};
         std::string Address{};
@@ -93,146 +68,160 @@ namespace mysock
 
         SOCKET Socket{};
 
-        // connect flag, thread safe
-        std::shared_ptr<std::atomic_bool> hasConnected;
     public:
-        socketor();
+        socketor() = default;
 
-        // copy constructor
-        socketor(const socketor&);
+        socketor(const socketor &) = default;
 
-        // move constructor
-        socketor(socketor&&) noexcept;
+        socketor(socketor &&) noexcept = default;
 
-        // copy assignment
-        socketor& operator=(const socketor&);
+        socketor &operator=(const socketor &) = default;
 
-        socketor(SOCKET target_socket, SOCKADDR_IN socket_info);
+        socketor &operator=(socketor &&) noexcept = default;
 
-        virtual ~socketor();
+        /**
+         * @brief construct with sock fd
+         *
+         * @param socket_fd     socket fd
+         * @param socket_info   socket info
+         */
+        socketor(SOCKET socket_fd, SOCKADDR_IN socket_info);
 
+        virtual ~socketor() = default;
 
         /**
          * @brief Send data
-         * 
+         *
          * @param dataBuf data buffer
          * @param len data length
+         *
+         * @return sent len
+         * @retval -1 sent fail
          */
-        virtual void Send(const void* dataBuf, size_t len) const;
+        virtual int64_t Send(const void *dataBuf, size_t len) const;
 
         /**
          * @brief Send string
          * 
          * @param str String
+         *
+         * @return sent len
+         * @retval -1 sent fail
          */
-        virtual void Send(const std::string& str) const;
+        virtual int64_t Send(const std::string &str) const;
 
         /**
          * @brief Receive data, block
          * 
          * @param buf Receive buffer
          * @param len Receive length
-         * @return int64_t Receive length, -1 if error
          *
+         * @return int64_t Receive length
+         * @retval -1 received error
          */
-        virtual int64_t receive(void* buf, size_t len) const;
+        virtual int64_t receive(void *buf, size_t len) const;
 
         /**
-         * @brief receive string, block
+         * @brief receive data as string
          * 
-         * @return std::string, empty string if error
-         * 
+         * @return std::string
+         * @retval "" receive error
          */
         virtual std::string receive() const;
 
 
-        // get socket address
-        std::string address() const
-        {
+        /**
+         * @brief get connect address
+         *
+         * @return address str
+         */
+        std::string address() const {
             return Address;
         };
 
-        // get socket port
-        uint16_t port() const
-        {
+        /**
+         * @brief get connect port
+         *
+         * @return connect port
+         */
+        constexpr uint16_t port() const {
             return Port;
         };
 
-        // set receive timeout
-        [[nodiscard("should be verified")]]auto setRecvTimeout(int timeout)
-        {
-#ifdef I_OS_LINUX
-            struct timeval tv;
-            tv.tv_sec = timeout / 1000;
-            tv.tv_usec = (timeout % 1000) * 1000;
-            return setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&tv, sizeof(struct timeval));
-#endif // I_OS_LINUX
-
-#ifdef I_OS_WIN
-            return setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
-#endif // I_OS_WIN
-
-        }
-
-        // set send timeout
-        [[nodiscard("should be verified")]]auto setSendTimeout(int timeout)
-        {
-#ifdef I_OS_LINUX
-            struct timeval tv;
-            tv.tv_sec = timeout / 1000;
-            tv.tv_usec = (timeout % 1000) * 1000;
-            return setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (char*)&tv, sizeof(struct timeval));
-#endif // I_OS_LINUX
-
-#ifdef I_OS_WIN
-            return setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout));
-#endif // I_OS_WIN
-        }
+        /**
+         * @brief set socket receive timeout
+         *
+         * @param timeout (sec)
+         * @retval flag::SUCCESS    set ok
+         * @retval SOCKET_ERROR     set fail
+         *
+         */
+        [[nodiscard("should be verified")]]int setRecvTimeout(int timeout);
 
         /**
-         * @brief Get the Raw Socket object
-         * 
-         * @return SOCKET
+         * @brief set socket send timeout
+         *
+         * @param timeout (sec)
+         * @retval flag::SUCCESS    set ok
+         * @retval SOCKET_ERROR     set fail
          */
-        SOCKET getRawSocket()
-        {
+        [[nodiscard("should be verified")]]int setSendTimeout(int timeout);
+
+        /**
+         * @brief Get the Raw Socket fd
+         * 
+         * @return socket fd
+         */
+        SOCKET getRawSocket() {
             return Socket;
         }
 
-
-        /**
-         * @brief Get the Connected flag
-         *
-         * @return bool
-         */
-        [[nodiscard]] bool checkConnected() const;
-
-        /**
-         * @brief Set the Connected flag
-         *
-         * @param flag
-         */
-        void setConnected(bool flag);
-
     protected:
-        // windows platform, wsa count
+        // windows platform, startUp wsa
 #ifdef I_OS_WIN
 
-        static inline std::atomic_uint init_count{0};
+        class WsaStartUpError : public std::exception {
+        public:
+            using std::exception::exception;
+        };
 
-        static inline WSADATA wsaData;
+        class WsaInitClass {
+        private:
 
-        static void WSASTARTUP();
+            WsaInitClass() {
+                WORD wVersionRequested = 0;
 
-        static void WSACLEANUP();
+                wVersionRequested = MAKEWORD(2, 2);
+                WSAData wsaData;
+                auto err = WSAStartup(wVersionRequested, &wsaData);
+                if (err != 0) {
+                    throw WsaStartUpError("WSAStartup failed");
+                }
 
+                if (LOBYTE(wsaData.wVersion) != 2 ||
+                    HIBYTE(wsaData.wVersion) != 2) {
+                    WSACleanup();
+                    throw WsaStartUpError("byte alignment failed");
+                }
+            }
+
+        public:
+            ~WsaInitClass() {
+                WSACleanup();
+            }
+
+            static void WsaInit() {
+                static WsaInitClass ins;
+            }
+
+            WsaInitClass(const WsaInitClass &) = delete;
+        };
+
+        static void wsaInit() {
+            WsaInitClass::WsaInit();
+        }
 #endif // I_OS_WIN
-
-
-
     };
-
-
 
 
 

@@ -28,85 +28,25 @@ void Sleep(int ms)
 
 namespace mysock
 {
-    socketor::socketor()
+
+    socketor::socketor(SOCKET socket_fd, SOCKADDR_IN socket_info)
     {
-#ifdef I_OS_WIN // wsaStartup
-        int err = 0;
-        ++init_count;
-        if (init_count == 1)
-            WSASTARTUP();
-#endif // I_OS_WIN
-
-        hasConnected = std::make_shared<std::atomic_bool>(false);
-
-    }
-
-    socketor::socketor(SOCKET target_socket, SOCKADDR_IN socket_info)
-    {
-        Socket = target_socket;
+        Socket = socket_fd;
         Socket_info.sin_family = socket_info.sin_family;
         Socket_info.sin_port = socket_info.sin_port;
         Socket_info.sin_addr = socket_info.sin_addr;
         Address = inet_ntoa(socket_info.sin_addr);
         Port = ntohs(socket_info.sin_port);
-        hasConnected = std::make_shared<std::atomic_bool>(false);
     }
 
-
-    socketor::~socketor()
+    int64_t socketor::Send(const void *dataBuf, size_t len) const
     {
-#ifdef I_OS_WIN
-        --init_count;
-        if (init_count == 0)
-            WSACLEANUP();
-#endif // I_OS_WIN
+        return send(Socket, (char *)dataBuf, len, 0);
     }
 
-    socketor::socketor(const socketor& other)
+    int64_t socketor::Send(const std::string &str) const
     {
-        Address = other.Address;
-        Port = other.Port;
-        Socket = other.Socket;
-        Socket_info = other.Socket_info;
-        hasConnected = other.hasConnected;
-#ifdef I_OS_WIN
-        ++init_count;
-#endif // I_OS_WIN
-    }
-
-    socketor::socketor(socketor&& other) noexcept
-    {
-        Address = other.Address;
-        Port = other.Port;
-        Socket = other.Socket;
-        Socket_info = other.Socket_info;
-        hasConnected = other.hasConnected;
-#ifdef I_OS_WIN
-        ++init_count;
-#endif // I_OS_WIN
-    }
-
-    socketor& socketor::operator=(const socketor& other)
-    {
-        if(this == &other)
-            return *this;
-        if(hasConnected->load())
-            throw std::runtime_error("try to assign a socket that has connected");
-        Address = other.Address;
-        Port = other.Port;
-        Socket = other.Socket;
-        Socket_info = other.Socket_info;
-        hasConnected = other.hasConnected;
-        return *this;
-    }
-
-    void socketor::Send(const void *dataBuf, size_t len) const
-    {
-        send(Socket, (char *)dataBuf, len, 0);
-    }
-    void socketor::Send(const std::string &str) const
-    {
-        send(Socket, str.c_str(), str.size(), 0);
+        return send(Socket, str.c_str(), str.size(), 0);
     }
 
     int64_t socketor::receive(void *buf, size_t len) const
@@ -123,42 +63,36 @@ namespace mysock
         return buf;
     }
 
-#ifdef I_OS_WIN
-    void socketor::WSACLEANUP()
-    {
-        WSACleanup();
-    }
-
-    void socketor::WSASTARTUP()
-    {
-        WORD wVersionRequested = 0;
-
-        wVersionRequested = MAKEWORD(2, 2);
-
-        auto err = WSAStartup(wVersionRequested, &wsaData);
-        if(err != 0){
-            throw std::runtime_error("WSAStartup failed");
-        }
-
-        if (LOBYTE(wsaData.wVersion) != 2 ||
-            HIBYTE(wsaData.wVersion) != 2)
+    int socketor::setSendTimeout(int timeout) {
         {
-            WSACleanup();
-            throw std::runtime_error("byte alignment failed");
+#ifdef I_OS_LINUX
+            struct timeval tv;
+            tv.tv_sec = timeout / 1000;
+            tv.tv_usec = (timeout % 1000) * 1000;
+            return setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (char*)&tv, sizeof(struct timeval));
+#endif // I_OS_LINUX
+
+#ifdef I_OS_WIN
+            return setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout));
+#endif // I_OS_WIN
         }
     }
 
-    bool socketor::checkConnected() const
-    {
-        return hasConnected->load();
-    }
+    int socketor::setRecvTimeout(int timeout) {
+        {
+#ifdef I_OS_LINUX
+            struct timeval tv;
+            tv.tv_sec = timeout / 1000;
+            tv.tv_usec = (timeout % 1000) * 1000;
+            return setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&tv, sizeof(struct timeval));
+#endif // I_OS_LINUX
 
-    void socketor::setConnected(bool flag)
-    {
-        hasConnected->store(flag);
-    }
-
+#ifdef I_OS_WIN
+            return setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
 #endif // I_OS_WIN
+
+        }
+    }
 
 
 } // namespace mysock

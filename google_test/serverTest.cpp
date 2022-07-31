@@ -1,7 +1,7 @@
 //
 // Created by HWZ on 2022/4/15.
 //
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include "server.h"
 #include "osplatformutil.h"
 
@@ -46,7 +46,7 @@ TEST(serverConstruct, parm) {
 }
 
 TEST_F(ServerTest, serverListen) {
-    bool listenStatus = server->Listen() == mysock::SUCESS ? true : false;
+    bool listenStatus = server->listen() == mysock::SUCESS ? true : false;
     EXPECT_EQ(listenStatus, true);
 #ifdef I_OS_WIN
     if(!listenStatus) {
@@ -54,16 +54,5 @@ TEST_F(ServerTest, serverListen) {
     }
 #endif // I_OS_WIN
     EXPECT_EQ(server->isListen(), listenStatus);
-}
-
-TEST(serverCopy, Default) {
-    mysock::Server server;
-    mysock::Server server2{server};
-    EXPECT_EQ(server.getPort(), server2.getPort());
-    EXPECT_EQ(server.isListen(), server2.isListen());
-
-    bool listenStatus = server.Listen() == mysock::SUCESS ? true : false;
-    EXPECT_EQ(listenStatus, server.isListen());
-    EXPECT_EQ(listenStatus, server2.isListen());
 }
 

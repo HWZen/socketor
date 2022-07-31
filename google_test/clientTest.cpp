@@ -11,7 +11,7 @@ protected:
     mysock::Server *server;
     ClientTest() {
         server = new mysock::Server{5150};
-        if(int err = server->Listen(); err != mysock::LISTEN_SUCESS)
+        if(int err = server->listen(); err != mysock::LISTEN_SUCESS)
         {
 #ifdef I_OS_WIN
             auto wsaErr = WSAGetLastError();

@@ -10,20 +10,22 @@
 #include <string>
 #include <cstdio>
 #include <algorithm>
-void foo(mysock::socketor c);
+void foo(const mysock::Server::Client& c);
 int main()
 {
     mysock::Server s(5150);
-    if (int err = s.Listen(); err != mysock::LISTEN_SUCESS)
+    if (int err = s.listen(); err != mysock::LISTEN_SUCESS)
     {
         perrln( "Listen fail: ", err);
         return 0;
     }
 
-    s.Accept(foo);
+    auto client = s.accept();
+    if(client.hasConnected())
+        foo(client);
 }
 
-void foo(mysock::socketor c){
+void foo(const mysock::Server::Client& c){
     using namespace fast_io::mnp;
     println(fast_io::out(), "connect: ", c.address());
     File f;
@@ -70,6 +72,4 @@ void foo(mysock::socketor c){
     ifile.close();
     ctx.do_final();
     println(fast_io::out() ,hash_digest(ctx));
-
-
 }

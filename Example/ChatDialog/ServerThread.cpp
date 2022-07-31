@@ -14,41 +14,42 @@ inline std::string QStringToStdString(const QString& str)
 
 void ServerThread::run()
 {
+    auto task = [=](const mysock::socketor& client)
+    {
+        qDebug() << "accept : " << client.address().c_str();
+        auto stdName = client.receive();
+        if(stdName == "lost connect")
+        {
+            qDebug() << "lost connect";
+            return;
+        }
+        auto name = QString::fromLocal8Bit(stdName.c_str());
+        auto tmp = new ClientThread(new mysock::socketor(client));
+        tmp->SetUserName(name);
+        tmp->start();
+        m_clientThreads.push_back(tmp);
+        connect(tmp, &ClientThread::recvMsg, this, [=](const QString& msg)
+        {
+            recvMsg(tmp, msg);
+        });
+
+        connect(tmp, &ClientThread::finished, this, [=]()
+        {
+            removeClient(tmp);
+        });
+    };
     while (true)
     {
-        m_server->Accept([=](const mysock::socketor& client)
-        {
-            qDebug() << "accept : " << client.address().c_str();
-            auto stdName = client.receive();
-            if(stdName == "lost connect")
-            {
-                qDebug() << "lost connect";
-                return;
-            }
-            auto name = QString::fromLocal8Bit(stdName.c_str());
-            auto tmp = new ClientThread(new mysock::socketor(client));
-            tmp->SetUserName(name);
-            tmp->start();
-            m_clientThreads.push_back(tmp);
-            connect(tmp, &ClientThread::recvMsg, this, [=](const QString& msg)
-            {
-                recvMsg(tmp, msg);
-            });
-
-            connect(tmp, &ClientThread::finished, this, [=]()
-            {
-                removeClient(tmp);
-            });
-        });
+        auto client = m_server->accept();
+        if(client.hasConnected())
+            task(client);
     }
 }
 
 void ServerThread::stop()
 {
     for (auto& i: m_clientThreads)
-    {
         i->stop();
-    }
     terminate();
 }
 
