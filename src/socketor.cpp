@@ -94,6 +94,18 @@ namespace mysock
         }
     }
 
-
+    socketor socketor::makeSocketor()
+    {
+#ifdef I_OS_WIN
+        WsaInitClass::WsaInit();
+#endif
+        socketor sock;
+        sock.Socket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        sock.Socket_info.sin_family = AF_INET;
+        sock.Socket_info.sin_port = htons(SOCKETOR_DEFAULT_PORT);
+        sock.Socket_info.sin_addr.s_addr = htonl(INADDR_ANY);
+        sock.Port = SOCKETOR_DEFAULT_PORT;
+        return sock;
+    }
 } // namespace mysock
 

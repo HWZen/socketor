@@ -7,17 +7,15 @@
 using IN_ADDR = in_addr;
 #endif
 
-mysock::Client::Client(const char *_server_address, uint16_t port)
+mysock::Client::Client(const char *_server_address, uint16_t port) : socketor(makeSocketor())
 {
     server_port = port;
     server_address = _server_address;
-
 }
 
 [[nodiscard]]int mysock::Client::Connect2Server()
 {
 #ifdef I_OS_WIN
-socketor::wsaInit();
 // DNS
 #ifdef _MSC_VER
     char **pptr = nullptr;
@@ -47,16 +45,14 @@ socketor::wsaInit();
 
 #ifdef I_OS_LINUX
 
-    char **pptr;
     struct hostent *hptr;
-    char str[32];
-    if ((hptr = gethostbyname(server_address.c_str())) == NULL)
+    if ((hptr = gethostbyname(server_address.c_str())) == nullptr)
         return GET_HOST_NAME_FAIL;
     switch (hptr->h_addrtype)
     {
     case AF_INET:
     case AF_INET6:
-        pptr = hptr->h_addr_list;
+        char str[32];
         server_address = inet_ntop(hptr->h_addrtype, hptr->h_addr, str, sizeof(str));
         break;
     default:
@@ -68,7 +64,6 @@ socketor::wsaInit();
     IN_ADDR tmp;
     tmp.s_addr = inet_addr(server_address.c_str());
     Address = server_address;
-    Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     Socket_info = {PF_INET, htons(server_port), tmp};
     if(connect(Socket, (struct sockaddr *)&Socket_info, sizeof(SOCKADDR_IN)) < 0)
         return CONNECT_FAIL;

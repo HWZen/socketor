@@ -104,6 +104,6 @@ namespace mysock
     public:
         // const static member
         constexpr static inline char const * const DEFAULT_SERVER = "127.0.0.1";
-        static inline const uint16_t DEFAULT_PORT = 5150;
+        static inline const uint16_t DEFAULT_PORT = SOCKETOR_DEFAULT_PORT;
     };
 } // namespace mysock

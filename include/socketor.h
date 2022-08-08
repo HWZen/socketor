@@ -44,6 +44,8 @@ using SOCKADDR_IN = struct sockaddr_in;
 
 #endif // I_OS_LINUX
 
+#define SOCKETOR_DEFAULT_PORT 5150
+
 namespace mysock {
     enum flag {
         SUCESS,
@@ -151,7 +153,7 @@ namespace mysock {
         /**
          * @brief set socket receive timeout
          *
-         * @param timeout (sec)
+         * @param timeout (millisecond)
          * @retval flag::SUCCESS    set ok
          * @retval SOCKET_ERROR     set fail
          *
@@ -161,7 +163,7 @@ namespace mysock {
         /**
          * @brief set socket send timeout
          *
-         * @param timeout (sec)
+         * @param timeout (millisecond)
          * @retval flag::SUCCESS    set ok
          * @retval SOCKET_ERROR     set fail
          */
@@ -175,6 +177,12 @@ namespace mysock {
         SOCKET getRawSocket() {
             return Socket;
         }
+
+        /**
+         * Make a standard socketor by ::socket()
+         * @return a socketor
+         */
+        static socketor makeSocketor();
 
     protected:
         // windows platform, startUp wsa

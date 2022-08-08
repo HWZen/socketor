@@ -3,6 +3,7 @@
 //
 #include <gtest/gtest.h>
 #include "server.h"
+#include "client.h"
 #include "osplatformutil.h"
 
 class ServerTest : public ::testing::Test {
@@ -46,7 +47,7 @@ TEST(serverConstruct, parm) {
 }
 
 TEST_F(ServerTest, serverListen) {
-    bool listenStatus = server->listen() == mysock::SUCESS ? true : false;
+    bool listenStatus = server->listen() == mysock::SUCESS;
     EXPECT_EQ(listenStatus, true);
 #ifdef I_OS_WIN
     if(!listenStatus) {
@@ -54,5 +55,15 @@ TEST_F(ServerTest, serverListen) {
     }
 #endif // I_OS_WIN
     EXPECT_EQ(server->isListen(), listenStatus);
+}
+
+TEST_F(ServerTest, serverAccept) {
+    EXPECT_EQ(server->listen(), mysock::SUCESS);
+    mysock::Client cl;
+    std::thread(&mysock::Client::Connect2Server, &cl).detach();
+    auto cli = server->accept();
+    EXPECT_EQ(cli.hasConnected(), true);
+    EXPECT_EQ(cli.address(), "127.0.0.1");
+    cli.closeConnect();
 }
 

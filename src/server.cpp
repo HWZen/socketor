@@ -7,11 +7,8 @@ void WSACleanup(){}
 
 namespace mysock {
 
-    Server::Server(uint16_t Port) {
-
-        Socket_info.sin_family = AF_INET;
+    Server::Server(uint16_t Port) :socketor(makeSocketor()) {
         Socket_info.sin_port = htons(Port);
-        Socket_info.sin_addr.s_addr = htonl(INADDR_ANY);
         socketor::Port = Port;
     }
 
@@ -19,11 +16,6 @@ namespace mysock {
         if (m_hasListened)
             return LISTEN_SUCESS;
 
-#ifdef I_OS_WIN
-        socketor::wsaInit();
-#endif // I_OS_WIN
-
-        Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (int err = bind(Socket, (struct sockaddr *) &Socket_info, sizeof(SOCKADDR_IN)); err == -1) {
             return BIND_FAIL;
         }

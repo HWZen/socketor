@@ -108,7 +108,7 @@ namespace mysock
 
     public:
         // const static member
-        static inline uint16_t DEFAULT_PORT = 5150;
+        static inline uint16_t DEFAULT_PORT = SOCKETOR_DEFAULT_PORT;
 
     };
 } // namespace mysock
