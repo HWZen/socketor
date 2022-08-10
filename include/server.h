@@ -92,7 +92,7 @@ namespace mysock
 
         /**
          * @brief accept a connection
-         * @return client socketor, or nullopt if fail.
+         * @return client socketor, hasConnected() will return true if accept success
          */
         Server::Client accept();
 

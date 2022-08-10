@@ -37,7 +37,6 @@ namespace mysock {
 
         SOCKADDR_IN rawClient;
 
-        // 开始接受握手请求，accept()是阻断函数，等成功接受后才会继续进行程序
 #ifdef I_OS_WIN
         int iaddrSize = sizeof(SOCKADDR_IN);
         auto temp = ::accept(Socket, (struct sockaddr *) &rawClient, &iaddrSize);
