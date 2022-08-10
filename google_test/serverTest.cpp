@@ -47,7 +47,7 @@ TEST(serverConstruct, parm) {
 }
 
 TEST_F(ServerTest, serverListen) {
-    bool listenStatus = server->listen() == mysock::SUCESS;
+    bool listenStatus = server->listen() == mysock::SOCKETOR_SUCESS;
     EXPECT_EQ(listenStatus, true);
 #ifdef I_OS_WIN
     if(!listenStatus) {
@@ -58,7 +58,7 @@ TEST_F(ServerTest, serverListen) {
 }
 
 TEST_F(ServerTest, serverAccept) {
-    EXPECT_EQ(server->listen(), mysock::SUCESS);
+    EXPECT_EQ(server->listen(), mysock::SOCKETOR_SUCESS);
     mysock::Client cl;
     std::thread(&mysock::Client::Connect2Server, &cl).detach();
     auto cli = server->accept();

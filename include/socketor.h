@@ -48,8 +48,9 @@ using SOCKADDR_IN = struct sockaddr_in;
 
 namespace mysock {
     enum flag {
-        SUCESS,
-        LISTEN_SUCESS = SUCESS,
+        SOCKETOR_SUCESS,
+        LISTEN_SUCESS = SOCKETOR_SUCESS,
+        SOCKETOR_FAIL,
         BIND_FAIL,
         LISTEN_FAIL,
         CONNECT_FAIL,

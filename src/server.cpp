@@ -55,7 +55,7 @@ namespace mysock {
         Server::Client client(temp, rawClient);
 #endif
         socketBuf = std::move(client);
-        return SUCESS;
+        return SOCKETOR_SUCESS;
     }
 
     constexpr bool Server::setPort(uint16_t Port) {
@@ -79,7 +79,7 @@ namespace mysock {
     Server::Client Server::accept() {
         Server::Client client;
         client.setServerPort(port());
-        if(rawAccept(client) != SUCESS)
+        if(rawAccept(client) != SOCKETOR_SUCESS)
             client.m_hasConnected = false;
         return client;
     }

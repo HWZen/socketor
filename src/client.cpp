@@ -24,12 +24,12 @@ mysock::Client::Client(const char *_server_address, uint16_t port) : socketor(ma
     if (nullptr != pHostEntry && server_address[0] != '\0')
     {
 
-        //½«Ö÷»úµØÖ·ÁÐ±íÊä³ö£¬¿Éº¬¶à¸ö
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½ï¿½ï¿½ï¿½
         int i = 0;
         for (i = 1, pptr = pHostEntry->h_addr_list; *pptr != nullptr; ++pptr)
         {
             memset(szIpBuff, 0, sizeof(szIpBuff));
-            //inet_ntopµÄ·µ»ØÖµÎªNULL£¬Ôò±íÊ¾Ê§°Ü£¬·ñÔò·µ»ØÏàÓ¦µÄIPµØÖ·£¨´ËÊ±szIpRetÖ¸ÏòµÄÊÇszIpBuff£©
+            //inet_ntopï¿½Ä·ï¿½ï¿½ï¿½ÖµÎªNULLï¿½ï¿½ï¿½ï¿½ï¿½Ê¾Ê§ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ò·µ»ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½IPï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½Ê±szIpRetÖ¸ï¿½ï¿½ï¿½ï¿½ï¿½szIpBuffï¿½ï¿½
             const char *szIpRet = inet_ntop(pHostEntry->h_addrtype, *pptr, szIpBuff, sizeof(szIpBuff));
             if(szIpRet != nullptr)
                 server_address = szIpBuff;
@@ -68,7 +68,7 @@ mysock::Client::Client(const char *_server_address, uint16_t port) : socketor(ma
     if(connect(Socket, (struct sockaddr *)&Socket_info, sizeof(SOCKADDR_IN)) < 0)
         return CONNECT_FAIL;
     hasConnected = true;
-    return SUCESS;
+    return SOCKETOR_SUCESS;
 }
 
 void mysock::Client::CloseConnect()

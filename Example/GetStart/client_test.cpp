@@ -5,7 +5,7 @@ using std::cin, std::cout, std::endl, std::string;
 
 int main(){
     mysock::Client c;
-    if(auto err = c.Connect2Server(); err != mysock::SUCESS)
+    if(auto err = c.Connect2Server(); err != mysock::SOCKETOR_SUCESS)
     {
         cout << "connect fail.\n";
         return 1;

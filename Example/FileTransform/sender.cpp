@@ -49,7 +49,7 @@ try
 
 
     mysock::Client c(serverAddr.c_str(), port);
-    if (int err = c.Connect2Server();err != mysock::SUCESS)
+    if (int err = c.Connect2Server();err != mysock::SOCKETOR_SUCESS)
     {
         perrln("connect fail: ", err);
         return 1;

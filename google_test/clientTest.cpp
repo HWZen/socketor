@@ -60,7 +60,7 @@ TEST_F(ClientTest, DNS)
     client->setAddress("baidu.com");
     EXPECT_EQ(client->getAddress(), "baidu.com");
     auto err = client->Connect2Server();
-    EXPECT_EQ(err, mysock::SUCESS);
+    EXPECT_EQ(err, mysock::SOCKETOR_SUCESS);
     EXPECT_NE(client->getAddress(), "baidu.com");
     client->CloseConnect();
 }
@@ -68,7 +68,7 @@ TEST_F(ClientTest, DNS)
 TEST_F(ClientTest, Connect)
 {
     auto err = client->Connect2Server();
-    EXPECT_EQ(err, mysock::SUCESS);
+    EXPECT_EQ(err, mysock::SOCKETOR_SUCESS);
 }
 
 TEST_F(ClientTest, SetParm)
@@ -82,7 +82,7 @@ TEST_F(ClientTest, SetParm)
 TEST_F(ClientTest, SetParmSafe)
 {
     auto err = client->Connect2Server();
-    EXPECT_EQ(err, mysock::SUCESS);
+    EXPECT_EQ(err, mysock::SOCKETOR_SUCESS);
     err = client->setPort(1234);
     EXPECT_EQ(err, false);
     EXPECT_NE(client->getPort(), 1234);
