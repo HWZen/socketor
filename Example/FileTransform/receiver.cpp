@@ -2,21 +2,18 @@
 // Created by HWZ on 2022/3/20.
 //
 #include "server.h"
-#include <fast_io.h>
 #include "fileStruct.h"
-#include <fast_io.h>
-#include<fast_io_device.h>
-#include<fast_io_crypto.h>
 #include <string>
 #include <cstdio>
 #include <algorithm>
+#include "hash.h"
 void foo(const mysock::Server::Client& c);
 int main()
 {
     mysock::Server s(5150);
     if (int err = s.listen(); err != mysock::LISTEN_SUCESS)
     {
-        perrln( "Listen fail: ", err);
+        perr( "Listen fail: ", err, "\n");
         return 0;
     }
 
@@ -26,19 +23,18 @@ int main()
 }
 
 void foo(const mysock::Server::Client& c){
-    using namespace fast_io::mnp;
-    println(fast_io::out(), "connect: ", c.address());
+
+    println("connect: ", c.address());
     File f;
     c.receive(&f, sizeof(f));
-    fast_io::out_buf_type allbuf;
 
-    println(fast_io::out() ,os_c_str((char *)f.filePath));
+    println(f.filePath);
 
 
     std::string tmp=f.fileName;
     tmp = "./" + tmp;
     FILE * pFile;
-    pFile = fopen(tmp.c_str(), "wb");
+    pFile = fopen(tmp.c_str(), "w+b");
     if(!pFile)
     {
         perr("file creat fail");
@@ -58,18 +54,21 @@ void foo(const mysock::Server::Client& c){
         it -= recLen;
         if(schedule < (double)(f.fileSize - it) / (double)f.fileSize * 100){
             schedule = (double)(f.fileSize - it) / (double)f.fileSize * 100;
-            println(fast_io::out(), schedule);
+            println(schedule);
         }
     }
+    println("receved.");
+    c.Send("receved");
+
+    auto fileBuf = new sstd::byte[f.fileSize];
+    fseek(pFile, 0, SEEK_SET);
+    fread(fileBuf, f.fileSize, 1, pFile);
     fclose(pFile);
 
-    println(fast_io::out() ,"receved.");
-    c.Send("receved");
-    fast_io::sha256_context ctx;
-    fast_io::ibuf_file ifile(os_c_str(tmp.c_str()));
 
-    transmit(as_file(ctx), ifile);
-    ifile.close();
-    ctx.do_final();
-    println(fast_io::out() ,hash_digest(ctx));
+    auto sha256 = sstd::SHA256Hash(fileBuf, f.fileSize);
+    auto strSha256 = sstd::SHA256Hash2String(sha256);
+
+    println("file sha256: ", f.sha256);
+    println("received sha256: ", strSha256);
 }
