@@ -29,7 +29,7 @@ void MainWindow::tryToConnectToServer(const QString& host, const QString& name, 
     {
         qDebug() << "Domain name: " << host;
         auto client = new mysock::Client(host.toLatin1().data(), port);
-        if(client->Connect2Server() != mysock::SUCESS){
+        if(client->Connect2Server() != mysock::SOCKETOR_SUCESS){
             emit connectFailed("Connection failed");
             delete client;
             return;
@@ -68,7 +68,7 @@ void MainWindow::tryToConnectToServer(const QString& host, const QString& name, 
 void MainWindow::tryToCreateServer(const QString& name, int port)
 {
     server = new mysock::Server(port);
-    if(server->listen() != mysock::SUCESS){
+    if(server->listen() != mysock::SOCKETOR_SUCESS){
         emit connectFailed("Server connect failed");
         delete server;
         return;
@@ -80,7 +80,7 @@ void MainWindow::tryToCreateServer(const QString& name, int port)
     connect(this, &MainWindow::stopSignal, serverThread, &ServerThread::stop);
 
     auto client = new mysock::Client("127.0.0.1", port);
-    if(client->Connect2Server() != mysock::SUCESS){
+    if(client->Connect2Server() != mysock::SOCKETOR_SUCESS){
         emit connectFailed("Connection failed");
         delete client;
         return;
