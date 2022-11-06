@@ -180,6 +180,14 @@ namespace mysock {
         }
 
         /**
+         * @brief Get socket info
+         * @return SOCKADDR_IN
+         */
+        SOCKADDR_IN getSocket_info(){
+            return Socket_info;
+        }
+
+        /**
          * Make a standard socketor by ::socket()
          * @return a socketor
          */
