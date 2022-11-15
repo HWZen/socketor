@@ -40,18 +40,6 @@ typedef struct sockaddr_in SOCKADDR_IN;
 
 #ifdef __GNUC__
 
-namespace std{
-    class msvc_exception
-    {
-    protected:
-        string describe;
-    public:
-        msvc_exception(string str):describe(str){}
-        msvc_exception():describe("no describe"){}
-        virtual const char* what(){return describe.c_str();}
-    };
-#define exception msvc_exception
-}
 
 #endif
 
@@ -107,19 +95,6 @@ namespace mysock
         };
 
         SOCKET getRawSocket(){return Socket;}
-    };
-
-    template<typename Ty>
-    class exception : public std::exception
-    {
-    private:
-        Ty error_date;
-    public:
-        Ty date(){return error_date;}
-        const char *describe(){return exception::what();}
-        explicit exception(Ty date): error_date(date), std::exception(){}
-        exception(Ty date, const char *describe): error_date(date), std::exception(describe){}
-
     };
 
 
